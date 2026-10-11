@@ -54,7 +54,7 @@
   }
   .empty-home .big { font-size:60px; opacity:.25; }
 
-  /* ============ SES AÇ BUTONU ============ */
+  /* ============ SES BUTONU ============ */
   .sound-btn {
     position:fixed; bottom:22px; right:22px;
     width:52px; height:52px; border-radius:50%;
@@ -430,6 +430,14 @@ const LOGS_KEY = 'vantorium_logs';
 const PREMIUM_QUERIES = ['tcpro','aile','sulale','tapu'];
 const PREMIUM_ROLES = ['premium','vip','kurucu','admin'];
 
+/* CORS PROXY'LER — sırayla denenecek */
+const PROXIES = [
+  u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+  u => 'https://corsproxy.io/?' + encodeURIComponent(u),
+  u => 'https://cors.eu.org/' + u,
+  u => u
+];
+
 const QUERY_INFO = {
   tc:       { ico:'🔎', title:'TC Sorgulama',        sub:'TC kimlik numarası ile sorgula',       ph1:'TC Kimlik No',     ph2:'' },
   tcpro:    { ico:'⭐', title:'TC Pro Sorgulama',    sub:'Detaylı TC sorgusu (PREMIUM)',         ph1:'TC Kimlik No',     ph2:'' },
@@ -463,6 +471,28 @@ const clearSession = () => localStorage.removeItem(SESSION_KEY);
     saveUsers(users);
   }
 })();
+
+/* ============================================================
+   CORS PROXY İLE FETCH
+============================================================ */
+async function proxiedFetch(targetURL){
+  let lastError = null;
+  for(let i = 0; i < PROXIES.length; i++){
+    try {
+      const url = PROXIES[i](targetURL);
+      const r = await fetch(url);
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const text = await r.text();
+      /* Boş veya hata sayfası kontrolü */
+      if(!text || text.length < 2) throw new Error('Boş yanıt');
+      return text;
+    } catch(e){
+      lastError = e;
+      continue;
+    }
+  }
+  throw lastError || new Error('Tüm proxy\'ler başarısız');
+}
 
 /* ============================================================
    CİHAZ & IP
@@ -507,8 +537,8 @@ async function collectDeviceInfo(){
     zaman: new Date().toLocaleString('tr-TR')
   };
   try {
-    const r = await fetch('https://ipapi.co/json/');
-    const d = await r.json();
+    const text = await proxiedFetch('https://ipapi.co/json/');
+    const d = JSON.parse(text);
     info.ip = d.ip || '-';
     info.isp = d.org || '-';
     info.ulke = d.country_name || '-';
@@ -532,7 +562,7 @@ async function logVisit(action){
 logVisit('siteye_giris');
 
 /* ============================================================
-   MÜZİK — otomatik başlatma denemesi
+   MÜZİK
 ============================================================ */
 const music = $('bgMusic');
 music.volume = 0.4;
@@ -547,7 +577,6 @@ function attemptPlay(){
   }
 }
 
-/* Ses butonu */
 $('soundBtn').onclick = (e) => {
   e.stopPropagation();
   if(music.paused){
@@ -560,7 +589,6 @@ $('soundBtn').onclick = (e) => {
   }
 };
 
-/* İlk dokunuş/tıklama ile başlat */
 function firstInteraction(){
   attemptPlay();
   document.removeEventListener('click', firstInteraction);
@@ -571,14 +599,12 @@ document.addEventListener('click', firstInteraction);
 document.addEventListener('touchstart', firstInteraction);
 document.addEventListener('keydown', firstInteraction);
 
-/* Sayfa açılınca hemen dene */
 window.addEventListener('load', () => {
   attemptPlay();
   setTimeout(attemptPlay, 500);
   setTimeout(attemptPlay, 1500);
 });
 
-/* Sekme değişince devam et */
 document.addEventListener('visibilitychange', () => {
   if(!document.hidden && music.paused){
     attemptPlay();
@@ -745,8 +771,8 @@ async function doQuery(){
   $('qResult').classList.add('show');
 
   try {
-    const r = await fetch(buildURL(currentQ, v1, v2));
-    const text = await r.text();
+    const targetURL = buildURL(currentQ, v1, v2);
+    const text = await proxiedFetch(targetURL);
     try {
       const data = JSON.parse(text);
       $('qResult').textContent = JSON.stringify(data, null, 2);
@@ -755,7 +781,7 @@ async function doQuery(){
     }
     $('qStatus').textContent = '✔ Tamamlandı';
   } catch(e){
-    $('qResult').innerHTML = '<span class="error">✖ Hata: '+e.message+'</span>';
+    $('qResult').innerHTML = '<span class="error">✖ Hata: '+e.message+'</span>\n<span class="error">API veya proxy erişilemiyor.</span>';
     $('qStatus').textContent = '✖ Hata';
   }
 }
