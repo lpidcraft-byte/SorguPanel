@@ -20,7 +20,6 @@
     z-index:-1;
   }
 
-  /* ============ ÜST BAR ============ */
   .topbar {
     display:flex; align-items:center; justify-content:space-between;
     padding:14px 20px;
@@ -41,20 +40,16 @@
   }
   .dots:active { transform:scale(0.92); background:rgba(120,80,255,0.35); }
 
-  /* ============ BOŞ ANA SAYFA ============ */
   .empty-home {
     position:fixed; inset:0;
     display:flex; align-items:center; justify-content:center;
     flex-direction:column; gap:14px;
     color:#8a8ab0; font-size:13px;
-    padding-top:60px;
-    text-align:center;
-    user-select:none;
+    padding-top:60px; text-align:center; user-select:none;
     text-shadow:0 2px 8px rgba(0,0,0,0.8);
   }
   .empty-home .big { font-size:60px; opacity:.25; }
 
-  /* ============ SES BUTONU ============ */
   .sound-btn {
     position:fixed; bottom:22px; right:22px;
     width:52px; height:52px; border-radius:50%;
@@ -63,8 +58,7 @@
     cursor:pointer; z-index:80;
     box-shadow:0 8px 24px rgba(236,72,153,0.5);
     display:flex; align-items:center; justify-content:center;
-    transition:.2s;
-    animation:pulse 2s infinite;
+    transition:.2s; animation:pulse 2s infinite;
   }
   .sound-btn:active { transform:scale(0.9); }
   .sound-btn.playing { animation:none; opacity:0.3; }
@@ -73,11 +67,9 @@
     50% { box-shadow:0 8px 32px rgba(236,72,153,0.9); }
   }
 
-  /* ============ YAN MENÜ ============ */
   .drawer-overlay {
     display:none; position:fixed; inset:0;
-    background:rgba(0,0,0,0.6);
-    z-index:90;
+    background:rgba(0,0,0,0.6); z-index:90;
     animation:fadeIn .2s ease;
   }
   .drawer-overlay.open { display:block; }
@@ -88,11 +80,9 @@
     width:300px; max-width:85%;
     background:linear-gradient(180deg,#0d0d1c 0%,#12122a 100%);
     border-right:1px solid rgba(120,80,255,0.35);
-    z-index:95;
-    transform:translateX(-100%);
+    z-index:95; transform:translateX(-100%);
     transition:transform .28s cubic-bezier(.4,0,.2,1);
-    overflow-y:auto;
-    padding-bottom:20px;
+    overflow-y:auto; padding-bottom:20px;
   }
   .drawer.open { transform:translateX(0); }
   .drawer-head {
@@ -114,46 +104,34 @@
   }
   .menu-item {
     display:flex; align-items:center; gap:12px;
-    padding:13px 20px;
-    cursor:pointer; font-size:14.5px;
-    color:#dcdcf0;
-    transition:.18s;
+    padding:13px 20px; cursor:pointer; font-size:14.5px;
+    color:#dcdcf0; transition:.18s;
     border-left:3px solid transparent;
   }
   .menu-item:active, .menu-item:hover {
     background:rgba(120,80,255,0.14);
-    border-left-color:#a78bfa;
-    color:#fff;
+    border-left-color:#a78bfa; color:#fff;
   }
   .menu-item .ico {
     width:22px; text-align:center;
-    font-size:16px; color:#a78bfa;
-    flex-shrink:0;
+    font-size:16px; color:#a78bfa; flex-shrink:0;
   }
   .badge {
-    margin-left:auto;
-    font-size:9.5px; font-weight:700;
+    margin-left:auto; font-size:9.5px; font-weight:700;
     padding:3px 8px; border-radius:6px;
-    background:rgba(251,191,36,0.15);
-    color:#fbbf24;
-    border:1px solid rgba(251,191,36,0.4);
-    letter-spacing:.5px;
+    background:rgba(251,191,36,0.15); color:#fbbf24;
+    border:1px solid rgba(251,191,36,0.4); letter-spacing:.5px;
   }
   .menu-item.locked { opacity:.45; }
   .menu-item.danger { color:#f87171; }
   .menu-item.danger .ico { color:#f87171; }
-  .menu-divider {
-    height:1px; margin:8px 20px;
-    background:rgba(120,80,255,0.15);
-  }
+  .menu-divider { height:1px; margin:8px 20px; background:rgba(120,80,255,0.15); }
 
-  /* ============ MODAL ============ */
   .modal-overlay {
     display:none; position:fixed; inset:0;
     background:rgba(0,0,0,0.78);
     backdrop-filter: blur(6px);
-    z-index:200;
-    align-items:center; justify-content:center;
+    z-index:200; align-items:center; justify-content:center;
     padding:18px;
   }
   .modal-overlay.open { display:flex; animation:fadeIn .2s; }
@@ -161,8 +139,7 @@
     background:linear-gradient(180deg,#15152b,#0f0f22);
     border:1px solid rgba(120,80,255,0.5);
     border-radius:18px; padding:24px;
-    width:100%; max-width:440px;
-    max-height:90vh; overflow-y:auto;
+    width:100%; max-width:440px; max-height:90vh; overflow-y:auto;
     box-shadow:0 20px 60px rgba(120,80,255,0.35);
   }
   .modal h3 {
@@ -177,11 +154,9 @@
   }
   .modal .switch span { color:#a78bfa; cursor:pointer; font-weight:600; }
 
-  /* ============ SORGU PANELİ ============ */
   .query-modal { max-width:480px; padding:20px; }
   .query-modal .qhead {
-    display:flex; align-items:center; gap:10px;
-    margin-bottom:16px;
+    display:flex; align-items:center; gap:10px; margin-bottom:16px;
   }
   .query-modal .qhead .qico {
     width:38px; height:38px;
@@ -190,16 +165,14 @@
     border-radius:11px; font-size:18px;
   }
   .query-modal .qhead h3 {
-    margin:0; text-align:left; font-size:16px;
-    color:#fff;
+    margin:0; text-align:left; font-size:16px; color:#fff;
   }
   .query-modal .qhead .qsub {
     font-size:11.5px; color:#9ca3af; margin-top:2px;
   }
   .query-modal .qclose {
-    margin-left:auto; cursor:pointer;
-    color:#9ca3af; font-size:20px;
-    padding:4px 10px; border-radius:8px;
+    margin-left:auto; cursor:pointer; color:#9ca3af;
+    font-size:20px; padding:4px 10px; border-radius:8px;
   }
   .query-modal .qclose:active { background:rgba(120,80,255,0.2); }
 
@@ -226,42 +199,38 @@
 
   .q-status {
     color:#a78bfa; font-size:12.5px;
-    margin-top:4px; text-align:center;
-    min-height:16px;
+    margin-top:4px; text-align:center; min-height:16px;
   }
   .q-result {
     background:rgba(5,5,15,0.92);
     border:1px solid rgba(120,80,255,0.4);
     border-radius:14px; padding:14px;
     margin-top:12px;
-    min-height:100px; max-height:280px; overflow:auto;
+    min-height:100px; max-height:340px; overflow:auto;
     white-space:pre-wrap; font-family:'Consolas',monospace;
-    font-size:12px; line-height:1.55;
-    word-break:break-word;
-    display:none;
+    font-size:11.5px; line-height:1.55;
+    word-break:break-word; display:none;
   }
   .q-result.show { display:block; }
   .error { color:#f87171; }
+  .ok { color:#22ff88; }
 
   .terminal {
     background:#000; color:#22ff88;
     font-family:'Consolas',monospace;
     border:1px solid #22ff88; border-radius:12px;
     padding:14px; height:280px; overflow-y:auto;
-    font-size:12.5px; margin-bottom:12px;
-    line-height:1.55;
+    font-size:12.5px; margin-bottom:12px; line-height:1.55;
   }
   .terminal input {
     background:#000; color:#22ff88;
     border:1px solid #22ff88;
-    font-family:'Consolas',monospace;
-    margin:0;
+    font-family:'Consolas',monospace; margin:0;
   }
   .hidden { display:none !important; }
   .ipinfo {
     font-size:12.5px; color:#b8b8d0;
-    line-height:1.85; word-break:break-word;
-    margin-bottom:14px;
+    line-height:1.85; word-break:break-word; margin-bottom:14px;
   }
   .ipinfo b { color:#a78bfa; }
 
@@ -269,35 +238,29 @@
     background:linear-gradient(135deg,#4b5563,#1f2937);
     border:none; color:#fff; padding:13px 24px;
     border-radius:12px; cursor:pointer; font-weight:700;
-    font-size:14.5px; transition:.2s; width:100%;
-    margin-top:10px;
+    font-size:14.5px; transition:.2s; width:100%; margin-top:10px;
   }
   .btn-secondary:active { transform:scale(0.97); }
   .btn-green {
-    background:linear-gradient(135deg,#22ff88,#0ea5e9);
-    color:#000;
+    background:linear-gradient(135deg,#22ff88,#0ea5e9); color:#000;
   }
 </style>
 </head>
 <body>
 
-<!-- ================= ÜST BAR ================= -->
 <div class="topbar">
   <div class="dots" id="dotsBtn">⋮</div>
   <div class="logo">VANTORIUM <span>SORGU</span></div>
   <div style="width:42px;"></div>
 </div>
 
-<!-- ================= BOŞ ANA SAYFA ================= -->
 <div class="empty-home">
   <div class="big">⋮</div>
   <div>Başlamak için sol üstteki menüyü aç</div>
 </div>
 
-<!-- ================= SES BUTONU ================= -->
 <button class="sound-btn" id="soundBtn">🔊</button>
 
-<!-- ================= YAN MENÜ ================= -->
 <div class="drawer-overlay" id="drawerOverlay"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-head">
@@ -339,7 +302,6 @@
   </div>
 </div>
 
-<!-- ================= GİRİŞ MODAL ================= -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal">
     <h3>🔑 Giriş Yap</h3>
@@ -350,7 +312,6 @@
   </div>
 </div>
 
-<!-- ================= KAYIT MODAL ================= -->
 <div class="modal-overlay" id="registerModal">
   <div class="modal">
     <h3>📝 Kaydol</h3>
@@ -362,7 +323,6 @@
   </div>
 </div>
 
-<!-- ================= SORGU MODAL ================= -->
 <div class="modal-overlay" id="queryModal">
   <div class="modal query-modal">
     <div class="qhead">
@@ -383,7 +343,6 @@
   </div>
 </div>
 
-<!-- ================= AYARLAR MODAL ================= -->
 <div class="modal-overlay" id="settingsModal">
   <div class="modal">
     <h3>⚙️ Ayarlar</h3>
@@ -393,7 +352,6 @@
   </div>
 </div>
 
-<!-- ================= TERMİNAL MODAL ================= -->
 <div class="modal-overlay" id="terminalModal">
   <div class="modal" style="max-width:560px;">
     <h3>💻 Kurucu Terminali</h3>
@@ -403,7 +361,6 @@
   </div>
 </div>
 
-<!-- ================= ADMIN MODAL ================= -->
 <div class="modal-overlay" id="adminModal">
   <div class="modal" style="max-width:660px;">
     <h3>🛡️ Admin Paneli — Ziyaretçi Kayıtları</h3>
@@ -412,11 +369,9 @@
   </div>
 </div>
 
-<!-- ================= MÜZİK ================= -->
 <audio id="bgMusic" loop preload="auto" playsinline>
   <source src="yalama.mp3" type="audio/mpeg">
   <source src="yalama.ogg" type="audio/ogg">
-  Tarayıcın ses etiketini desteklemiyor.
 </audio>
 
 <script>
@@ -430,12 +385,13 @@ const LOGS_KEY = 'vantorium_logs';
 const PREMIUM_QUERIES = ['tcpro','aile','sulale','tapu'];
 const PREMIUM_ROLES = ['premium','vip','kurucu','admin'];
 
-/* CORS PROXY'LER — sırayla denenecek */
+/* Sırayla denenecek proxy'ler */
 const PROXIES = [
-  u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
-  u => 'https://corsproxy.io/?' + encodeURIComponent(u),
-  u => 'https://cors.eu.org/' + u,
-  u => u
+  { name:'codetabs',  fn: u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u) },
+  { name:'allorigins',fn: u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u) },
+  { name:'corsproxy', fn: u => 'https://corsproxy.io/?' + encodeURIComponent(u) },
+  { name:'thingproxy',fn: u => 'https://thingproxy.freeboard.io/fetch/' + u },
+  { name:'direkt',    fn: u => u }
 ];
 
 const QUERY_INFO = {
@@ -473,21 +429,26 @@ const clearSession = () => localStorage.removeItem(SESSION_KEY);
 })();
 
 /* ============================================================
-   CORS PROXY İLE FETCH
+   ÇOK KATMANLI PROXY FETCH
 ============================================================ */
-async function proxiedFetch(targetURL){
+async function proxiedFetch(targetURL, onLog){
   let lastError = null;
-  for(let i = 0; i < PROXIES.length; i++){
+  for(const p of PROXIES){
     try {
-      const url = PROXIES[i](targetURL);
-      const r = await fetch(url);
-      if(!r.ok) throw new Error('HTTP '+r.status);
+      if(onLog) onLog('⏳ Deneniyor: ' + p.name);
+      const url = p.fn(targetURL);
+      const controller = new AbortController();
+      const timeout = setTimeout(()=>controller.abort(), 12000);
+      const r = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeout);
+      if(!r.ok) throw new Error('HTTP ' + r.status);
       const text = await r.text();
-      /* Boş veya hata sayfası kontrolü */
       if(!text || text.length < 2) throw new Error('Boş yanıt');
-      return text;
+      if(onLog) onLog('✔ Başarılı: ' + p.name);
+      return { text, proxy: p.name };
     } catch(e){
       lastError = e;
+      if(onLog) onLog('✖ ' + p.name + ' → ' + e.message);
       continue;
     }
   }
@@ -537,8 +498,8 @@ async function collectDeviceInfo(){
     zaman: new Date().toLocaleString('tr-TR')
   };
   try {
-    const text = await proxiedFetch('https://ipapi.co/json/');
-    const d = JSON.parse(text);
+    const res = await proxiedFetch('https://ipapi.co/json/');
+    const d = JSON.parse(res.text);
     info.ip = d.ip || '-';
     info.isp = d.org || '-';
     info.ulke = d.country_name || '-';
@@ -571,24 +532,19 @@ music.loop = true;
 function attemptPlay(){
   const p = music.play();
   if(p && p.then){
-    p.then(() => {
-      $('soundBtn').classList.add('playing');
-    }).catch(() => {});
+    p.then(() => $('soundBtn').classList.add('playing')).catch(() => {});
   }
 }
-
 $('soundBtn').onclick = (e) => {
   e.stopPropagation();
   if(music.paused){
-    music.play().then(()=>{
-      $('soundBtn').classList.add('playing');
-    }).catch(err => alert('Ses çalınamadı: ' + err.message));
+    music.play().then(()=>$('soundBtn').classList.add('playing'))
+      .catch(err => alert('Ses çalınamadı: ' + err.message));
   } else {
     music.pause();
     $('soundBtn').classList.remove('playing');
   }
 };
-
 function firstInteraction(){
   attemptPlay();
   document.removeEventListener('click', firstInteraction);
@@ -598,17 +554,13 @@ function firstInteraction(){
 document.addEventListener('click', firstInteraction);
 document.addEventListener('touchstart', firstInteraction);
 document.addEventListener('keydown', firstInteraction);
-
 window.addEventListener('load', () => {
   attemptPlay();
   setTimeout(attemptPlay, 500);
   setTimeout(attemptPlay, 1500);
 });
-
 document.addEventListener('visibilitychange', () => {
-  if(!document.hidden && music.paused){
-    attemptPlay();
-  }
+  if(!document.hidden && music.paused) attemptPlay();
 });
 
 /* ============================================================
@@ -767,22 +719,36 @@ async function doQuery(){
   if(info.ph2 && !v2){ $('qStatus').textContent = '⚠ İkinci alanı da doldur!'; return; }
 
   $('qStatus').textContent = '⏳ Sorgulanıyor...';
-  $('qResult').textContent = 'Yükleniyor...';
+  $('qResult').textContent = '';
   $('qResult').classList.add('show');
+
+  const logs = [];
+  function onLog(msg){
+    logs.push(msg);
+    $('qResult').textContent = logs.join('\n') + '\n\n--- SONUÇ ---\n';
+  }
 
   try {
     const targetURL = buildURL(currentQ, v1, v2);
-    const text = await proxiedFetch(targetURL);
+    const res = await proxiedFetch(targetURL, onLog);
+    logs.push('');
+    logs.push('════ SONUÇ (' + res.proxy + ') ════');
     try {
-      const data = JSON.parse(text);
-      $('qResult').textContent = JSON.stringify(data, null, 2);
+      const data = JSON.parse(res.text);
+      $('qResult').textContent = logs.join('\n') + '\n' + JSON.stringify(data, null, 2);
     } catch(e){
-      $('qResult').textContent = text;
+      $('qResult').textContent = logs.join('\n') + '\n' + res.text;
     }
-    $('qStatus').textContent = '✔ Tamamlandı';
+    $('qStatus').textContent = '✔ ' + res.proxy + ' üzerinden tamamlandı';
   } catch(e){
-    $('qResult').innerHTML = '<span class="error">✖ Hata: '+e.message+'</span>\n<span class="error">API veya proxy erişilemiyor.</span>';
-    $('qStatus').textContent = '✖ Hata';
+    logs.push('');
+    logs.push('💀 TÜM PROXY\'LER BAŞARISIZ');
+    logs.push('Son hata: ' + e.message);
+    logs.push('');
+    logs.push('API veya proxy erişilemiyor.');
+    logs.push('API sağlam ama CORS engelliyor olabilir.');
+    $('qResult').textContent = logs.join('\n');
+    $('qStatus').textContent = '✖ Tüm proxy\'ler başarısız';
   }
 }
 
