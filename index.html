@@ -16,7 +16,7 @@
   body::before {
     content:'';
     position:fixed; inset:0;
-    background: rgba(5,5,15,0.85);
+    background: rgba(5,5,15,0.55);
     z-index:-1;
   }
 
@@ -24,7 +24,7 @@
   .topbar {
     display:flex; align-items:center; justify-content:space-between;
     padding:14px 20px;
-    background:rgba(15,15,30,0.75);
+    background:rgba(15,15,30,0.6);
     border-bottom:1px solid rgba(120,80,255,0.3);
     backdrop-filter: blur(12px);
     position:fixed; top:0; left:0; right:0; z-index:50;
@@ -46,13 +46,31 @@
     position:fixed; inset:0;
     display:flex; align-items:center; justify-content:center;
     flex-direction:column; gap:14px;
-    color:#4a4a6a; font-size:13px;
+    color:#8a8ab0; font-size:13px;
     padding-top:60px;
     text-align:center;
     user-select:none;
+    text-shadow:0 2px 8px rgba(0,0,0,0.8);
   }
-  .empty-home .big {
-    font-size:60px; opacity:.15;
+  .empty-home .big { font-size:60px; opacity:.25; }
+
+  /* ============ SES AÇ BUTONU ============ */
+  .sound-btn {
+    position:fixed; bottom:22px; right:22px;
+    width:52px; height:52px; border-radius:50%;
+    background:linear-gradient(135deg,#7c3aed,#ec4899);
+    border:none; color:#fff; font-size:22px;
+    cursor:pointer; z-index:80;
+    box-shadow:0 8px 24px rgba(236,72,153,0.5);
+    display:flex; align-items:center; justify-content:center;
+    transition:.2s;
+    animation:pulse 2s infinite;
+  }
+  .sound-btn:active { transform:scale(0.9); }
+  .sound-btn.playing { animation:none; opacity:0.3; }
+  @keyframes pulse {
+    0%,100% { box-shadow:0 8px 24px rgba(236,72,153,0.5); }
+    50% { box-shadow:0 8px 32px rgba(236,72,153,0.9); }
   }
 
   /* ============ YAN MENÜ ============ */
@@ -129,7 +147,7 @@
     background:rgba(120,80,255,0.15);
   }
 
-  /* ============ MODAL GENEL ============ */
+  /* ============ MODAL ============ */
   .modal-overlay {
     display:none; position:fixed; inset:0;
     background:rgba(0,0,0,0.78);
@@ -159,11 +177,8 @@
   }
   .modal .switch span { color:#a78bfa; cursor:pointer; font-weight:600; }
 
-  /* ============ SORGU PANELİ (KÜÇÜK MODERN) ============ */
-  .query-modal {
-    max-width:480px;
-    padding:20px;
-  }
+  /* ============ SORGU PANELİ ============ */
+  .query-modal { max-width:480px; padding:20px; }
   .query-modal .qhead {
     display:flex; align-items:center; gap:10px;
     margin-bottom:16px;
@@ -279,6 +294,9 @@
   <div>Başlamak için sol üstteki menüyü aç</div>
 </div>
 
+<!-- ================= SES BUTONU ================= -->
+<button class="sound-btn" id="soundBtn">🔊</button>
+
 <!-- ================= YAN MENÜ ================= -->
 <div class="drawer-overlay" id="drawerOverlay"></div>
 <div class="drawer" id="drawer">
@@ -344,7 +362,7 @@
   </div>
 </div>
 
-<!-- ================= SORGU PANELİ MODAL ================= -->
+<!-- ================= SORGU MODAL ================= -->
 <div class="modal-overlay" id="queryModal">
   <div class="modal query-modal">
     <div class="qhead">
@@ -395,8 +413,10 @@
 </div>
 
 <!-- ================= MÜZİK ================= -->
-<audio id="bgMusic" loop preload="auto">
+<audio id="bgMusic" loop preload="auto" playsinline>
   <source src="yalama.mp3" type="audio/mpeg">
+  <source src="yalama.ogg" type="audio/ogg">
+  Tarayıcın ses etiketini desteklemiyor.
 </audio>
 
 <script>
@@ -436,7 +456,6 @@ const getSession = () => JSON.parse(localStorage.getItem(SESSION_KEY) || 'null')
 const setSession = s => localStorage.setItem(SESSION_KEY, JSON.stringify(s));
 const clearSession = () => localStorage.removeItem(SESSION_KEY);
 
-/* Kurucu hesabı */
 (function initFounder(){
   const users = getUsers();
   if(!users['baba5231']){
@@ -513,18 +532,58 @@ async function logVisit(action){
 logVisit('siteye_giris');
 
 /* ============================================================
-   MÜZİK
+   MÜZİK — otomatik başlatma denemesi
 ============================================================ */
 const music = $('bgMusic');
-music.volume = 0.35;
-function tryPlay(){
-  music.play().then(()=>{
-    document.removeEventListener('click', tryPlay);
-    document.removeEventListener('touchstart', tryPlay);
-  }).catch(()=>{});
+music.volume = 0.4;
+music.loop = true;
+
+function attemptPlay(){
+  const p = music.play();
+  if(p && p.then){
+    p.then(() => {
+      $('soundBtn').classList.add('playing');
+    }).catch(() => {});
+  }
 }
-document.addEventListener('click', tryPlay);
-document.addEventListener('touchstart', tryPlay);
+
+/* Ses butonu */
+$('soundBtn').onclick = (e) => {
+  e.stopPropagation();
+  if(music.paused){
+    music.play().then(()=>{
+      $('soundBtn').classList.add('playing');
+    }).catch(err => alert('Ses çalınamadı: ' + err.message));
+  } else {
+    music.pause();
+    $('soundBtn').classList.remove('playing');
+  }
+};
+
+/* İlk dokunuş/tıklama ile başlat */
+function firstInteraction(){
+  attemptPlay();
+  document.removeEventListener('click', firstInteraction);
+  document.removeEventListener('touchstart', firstInteraction);
+  document.removeEventListener('keydown', firstInteraction);
+}
+document.addEventListener('click', firstInteraction);
+document.addEventListener('touchstart', firstInteraction);
+document.addEventListener('keydown', firstInteraction);
+
+/* Sayfa açılınca hemen dene */
+window.addEventListener('load', () => {
+  attemptPlay();
+  setTimeout(attemptPlay, 500);
+  setTimeout(attemptPlay, 1500);
+});
+
+/* Sekme değişince devam et */
+document.addEventListener('visibilitychange', () => {
+  if(!document.hidden && music.paused){
+    attemptPlay();
+  }
+});
 
 /* ============================================================
    YAN MENÜ
@@ -534,7 +593,7 @@ const drawerOverlay = $('drawerOverlay');
 function openDrawer(){ drawer.classList.add('open'); drawerOverlay.classList.add('open'); }
 function closeDrawer(){ drawer.classList.remove('open'); drawerOverlay.classList.remove('open'); }
 
-$('dotsBtn').onclick = openDrawer;
+$('dotsBtn').onclick = (e) => { e.stopPropagation(); openDrawer(); };
 $('drawerClose').onclick = closeDrawer;
 drawerOverlay.onclick = closeDrawer;
 
@@ -566,6 +625,7 @@ $('loginBtn').onclick = () => {
   closeModal('loginModal');
   $('loginUser').value=''; $('loginPass').value='';
   refreshUI();
+  attemptPlay();
   alert('Giriş başarılı!');
 };
 
@@ -586,6 +646,7 @@ $('registerBtn').onclick = () => {
   closeModal('registerModal');
   $('regUser').value=''; $('regPass').value=''; $('regPass2').value='';
   refreshUI();
+  attemptPlay();
   alert('Kayıt başarılı! Hoş geldin '+u);
 };
 
@@ -645,7 +706,6 @@ function openQueryPanel(q){
 
 $('qClose').onclick = () => closeModal('queryModal');
 
-/* Menü sorgu tıklamaları */
 document.querySelectorAll('.menu-item[data-q]').forEach(el => {
   el.onclick = () => openQueryPanel(el.dataset.q);
 });
@@ -856,7 +916,6 @@ function updateLocks(){
 ============================================================ */
 refreshUI();
 
-/* Giriş yapılmamışsa otomatik giriş modalı aç */
 window.addEventListener('load', () => {
   if(!getSession()){
     setTimeout(()=>openModal('loginModal'), 400);
