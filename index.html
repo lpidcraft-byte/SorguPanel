@@ -217,8 +217,6 @@
   }
   .q-result.show { display:block; }
   .error { color:#f87171; }
-  .ok { color:#22ff88; }
-  .info { color:#a78bfa; }
 
   .terminal {
     background:#000; color:#22ff88;
@@ -390,13 +388,11 @@ const LOGS_KEY = 'vantorium_logs';
 const PREMIUM_QUERIES = ['tcpro','aile','sulale','tapu'];
 const PREMIUM_ROLES = ['premium','vip','kurucu','admin'];
 
-/* 6 proxy sırayla — biri çalışırsa tamam */
 const PROXIES = [
+  { name:'vantorium',   fn: u => 'https://vantorium-proxy.bubabxba.workers.dev/?url=' + encodeURIComponent(u) },
   { name:'codetabs',    fn: u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u) },
   { name:'allorigins',  fn: u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u) },
   { name:'corsproxy.io',fn: u => 'https://corsproxy.io/?' + encodeURIComponent(u) },
-  { name:'thingproxy',  fn: u => 'https://thingproxy.freeboard.io/fetch/' + u },
-  { name:'whateverorigin', fn: u => 'https://www.whateverorigin.org/get?url=' + encodeURIComponent(u) },
   { name:'direkt',      fn: u => u }
 ];
 
@@ -435,30 +431,27 @@ const clearSession = () => localStorage.removeItem(SESSION_KEY);
 })();
 
 /* ============================================================
-   ÇOK KATMANLI PROXY FETCH
+   SESSİZ PROXY FETCH — log yok
 ============================================================ */
-async function proxiedFetch(targetURL, onLog){
+async function proxiedFetch(targetURL){
   let lastError = null;
   for(const p of PROXIES){
     try {
-      if(onLog) onLog('⏳ Deneniyor: ' + p.name);
       const url = p.fn(targetURL);
       const controller = new AbortController();
-      const timeout = setTimeout(()=>controller.abort(), 12000);
+      const timeout = setTimeout(()=>controller.abort(), 15000);
       const r = await fetch(url, { signal: controller.signal });
       clearTimeout(timeout);
       if(!r.ok) throw new Error('HTTP ' + r.status);
       const text = await r.text();
       if(!text || text.length < 2) throw new Error('Boş yanıt');
-      if(onLog) onLog('✔ Başarılı: ' + p.name);
       return { text, proxy: p.name };
     } catch(e){
       lastError = e;
-      if(onLog) onLog('✖ ' + p.name + ' → ' + e.message);
       continue;
     }
   }
-  throw lastError || new Error('Tüm proxy\'ler başarısız');
+  throw lastError || new Error('Başarısız');
 }
 
 /* ============================================================
@@ -654,7 +647,7 @@ let currentQ = null;
 function openQueryPanel(q){
   const s = getSession();
   if(!s){
-    alert('Önce giriş yap veya kaydol, amına koyayım!');
+    alert('Önce giriş yap veya kaydol!');
     closeDrawer();
     openModal('loginModal');
     return;
@@ -729,37 +722,19 @@ async function doQuery(){
   $('qResult').textContent = '';
   $('qResult').classList.add('show');
 
-  const logs = [];
-  function onLog(msg){
-    logs.push(msg);
-    $('qResult').textContent = logs.join('\n');
-  }
-
   try {
     const targetURL = buildURL(currentQ, v1, v2);
-    onLog('Hedef: ' + targetURL);
-    onLog('');
-    const res = await proxiedFetch(targetURL, onLog);
-    logs.push('');
-    logs.push('════ SONUÇ (' + res.proxy + ') ════');
+    const res = await proxiedFetch(targetURL);
     try {
       const data = JSON.parse(res.text);
-      $('qResult').textContent = logs.join('\n') + '\n' + JSON.stringify(data, null, 2);
+      $('qResult').textContent = JSON.stringify(data, null, 2);
     } catch(e){
-      $('qResult').textContent = logs.join('\n') + '\n' + res.text;
+      $('qResult').textContent = res.text;
     }
-    $('qStatus').textContent = '✔ ' + res.proxy + ' üzerinden tamamlandı';
+    $('qStatus').textContent = '✔ Tamamlandı';
   } catch(e){
-    logs.push('');
-    logs.push('💀 TÜM PROXY\'LER BAŞARISIZ');
-    logs.push('Son hata: ' + e.message);
-    logs.push('');
-    logs.push('Öneriler:');
-    logs.push('1. API gerçekten çalışıyor mu? Tarayıcıda test et.');
-    logs.push('2. Farklı proxy kullanmak için kodu güncelle.');
-    logs.push('3. Kendi proxy sunucunu kur (Cloudflare Worker).');
-    $('qResult').textContent = logs.join('\n');
-    $('qStatus').textContent = '✖ Tüm proxy\'ler başarısız';
+    $('qResult').innerHTML = '<span class="error">✖ Sorgu başarısız. Tekrar dene.</span>';
+    $('qStatus').textContent = '✖ Hata';
   } finally {
     $('qBtn').disabled = false;
   }
