@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vantorium Sorgu</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
+  html,body { height:100%; }
+  body {
+    background: url('arkaplan.jpg') center/cover fixed no-repeat, #0a0a12;
+    color:#e6e6f0;
+    overflow-x:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background: rgba(5,5,15,0.82);
+    z-index:-1;
+  }
+  /* ============ ÜST BAR ============ */
+  .topbar {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 20px;
+    background:rgba(15,15,30,0.75);
+    border-bottom:1px solid rgba(120,80,255,0.3);
+    backdrop-filter: blur(12px);
+    position:sticky; top:0; z-index:50;
+  }
+  .logo { font-weight:800; font-size:20px; color:#a78bfa; letter-spacing:1.5px; }
+  .logo span { color:#f472b6; }
+  .dots {
+    cursor:pointer; width:42px; height:42px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:12px; font-size:22px; user-select:none;
+    background:rgba(120,80,255,0.15);
+    border:1px solid rgba(120,80,255,0.4);
+    transition:.2s; color:#a78bfa;
+  }
+  .dots:active { transform:scale(0.92); background:rgba(120,80,255,0.35); }
+
+  /* ============ YAN MENÜ ============ */
+  .drawer-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,0.6);
+    z-index:90;
+    animation:fadeIn .2s ease;
+  }
+  .drawer-overlay.open { display:block; }
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+  .drawer {
+    position:fixed; top:0; left:0; bottom:0;
+    width:300px; max-width:85%;
+    background:linear-gradient(180deg,#0d0d1c 0%,#12122a 100%);
+    border-right:1px solid rgba(120,80,255,0.35);
+    z-index:95;
+    transform:translateX(-100%);
+    transition:transform .28s cubic-bezier(.4,0,.2,1);
+    overflow-y:auto;
+    padding-bottom:20px;
+  }
+  .drawer.open { transform:translateX(0); }
+  .drawer-head {
+    padding:18px 20px;
+    border-bottom:1px solid rgba(120,80,255,0.2);
+    display:flex; align-items:center; gap:12px;
+  }
+  .drawer-head .logo { font-size:17px; }
+  .drawer-head .close {
+    margin-left:auto; cursor:pointer; color:#9ca3af;
+    font-size:22px; padding:4px 8px; border-radius:8px;
+  }
+  .drawer-head .close:active { background:rgba(120,80,255,0.2); }
+
+  .menu-label {
+    padding:16px 20px 6px;
+    font-size:11px; letter-spacing:2px;
+    color:#7c7c9a; font-weight:600;
+  }
+  .menu-item {
+    display:flex; align-items:center; gap:12px;
+    padding:13px 20px;
+    cursor:pointer; font-size:14.5px;
+    color:#dcdcf0;
+    transition:.18s;
+    border-left:3px solid transparent;
+  }
+  .menu-item:active, .menu-item:hover {
+    background:rgba(120,80,255,0.14);
+    border-left-color:#a78bfa;
+    color:#fff;
+  }
+  .menu-item .ico {
+    width:22px; text-align:center;
+    font-size:16px; color:#a78bfa;
+    flex-shrink:0;
+  }
+  .badge {
+    margin-left:auto;
+    font-size:9.5px; font-weight:700;
+    padding:3px 8px; border-radius:6px;
+    background:rgba(251,191,36,0.15);
+    color:#fbbf24;
+    border:1px solid rgba(251,191,36,0.4);
+    letter-spacing:.5px;
+  }
+  .menu-item.locked { opacity:.45; }
+  .menu-item.danger { color:#f87171; }
+  .menu-item.danger .ico { color:#f87171; }
+  .menu-divider {
+    height:1px; margin:8px 20px;
+    background:rgba(120,80,255,0.15);
+  }
+
+  /* ============ ANA İÇERİK ============ */
+  .container { max-width:900px; margin:22px auto; padding:0 16px 80px; }
+  .panel {
+    background:rgba(20,20,40,0.78);
+    border:1px solid rgba(120,80,255,0.3);
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:18px;
+    backdrop-filter: blur(10px);
+  }
+  .panel h2 {
+    color:#a78bfa; margin-bottom:14px;
+    font-size:17px; font-weight:700;
+    display:flex; align-items:center; gap:8px;
+  }
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  input, select {
+    flex:1; min-width:150px;
+    background:rgba(10,10,25,0.85);
+    border:1px solid rgba(120,80,255,0.4);
+    border-radius:12px; padding:13px 14px;
+    color:#e6e6f0; font-size:14.5px; outline:none;
+    transition:.2s;
+  }
+  input:focus, select:focus {
+    border-color:#a78bfa;
+    box-shadow:0 0 0 3px rgba(120,80,255,0.22);
+  }
+  button.primary {
+    background:linear-gradient(135deg,#7c3aed,#ec4899);
+    border:none; color:#fff; padding:13px 24px;
+    border-radius:12px; cursor:pointer; font-weight:700;
+    font-size:14.5px; transition:.2s;
+    white-space:nowrap;
+  }
+  button.primary:active { transform:scale(0.96); }
+  button.primary:disabled { opacity:.5; cursor:not-allowed; }
+
+  .query-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+    gap:11px;
+  }
+  .query-btn {
+    background:rgba(120,80,255,0.12);
+    border:1px solid rgba(120,80,255,0.35);
+    color:#e6e6f0; padding:15px 12px;
+    border-radius:12px; cursor:pointer;
+    font-size:13.5px; transition:.18s;
+    display:flex; align-items:center; gap:8px;
+    text-align:left;
+  }
+  .query-btn:active { transform:scale(0.96); background:rgba(120,80,255,0.3); }
+  .query-btn .star { color:#fbbf24; font-size:13px; margin-left:auto; }
+  .query-btn.locked { opacity:.5; }
+
+  #result {
+    background:rgba(5,5,15,0.92);
+    border:1px solid rgba(120,80,255,0.4);
+    border-radius:14px; padding:16px;
+    min-height:130px; max-height:480px; overflow:auto;
+    white-space:pre-wrap; font-family:'Consolas',monospace;
+    font-size:12.5px; line-height:1.55;
+    word-break:break-word;
+  }
+  .status { color:#a78bfa; margin-top:12px; font-size:13px; }
+  .error { color:#f87171; }
+
+  /* ============ MODAL ============ */
+  .modal-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,0.78);
+    backdrop-filter: blur(6px);
+    z-index:200;
+    align-items:center; justify-content:center;
+    padding:18px;
+  }
+  .modal-overlay.open { display:flex; animation:fadeIn .2s; }
+  .modal {
+    background:linear-gradient(180deg,#15152b,#0f0f22);
+    border:1px solid rgba(120,80,255,0.5);
+    border-radius:18px; padding:24px;
+    width:100%; max-width:440px;
+    max-height:90vh; overflow-y:auto;
+    box-shadow:0 20px 60px rgba(120,80,255,0.35);
+  }
+  .modal h3 {
+    color:#a78bfa; margin-bottom:18px;
+    text-align:center; font-size:18px;
+  }
+  .modal input { width:100%; margin-bottom:12px; }
+  .modal .primary { width:100%; margin-top:6px; }
+  .modal .switch {
+    text-align:center; margin-top:14px;
+    font-size:13px; color:#9ca3af;
+  }
+  .modal .switch span { color:#a78bfa; cursor:pointer; font-weight:600; }
+
+  .terminal {
+    background:#000; color:#22ff88;
+    font-family:'Consolas',monospace;
+    border:1px solid #22ff88; border-radius:12px;
+    padding:14px; height:280px; overflow-y:auto;
+    font-size:12.5px; margin-bottom:12px;
+    line-height:1.55;
+  }
+  .terminal input {
+    background:#000; color:#22ff88;
+    border:1px solid #22ff88;
+    font-family:'Consolas',monospace;
+  }
+  .hidden { display:none !important; }
+  .ipinfo {
+    font-size:12.5px; color:#b8b8d0;
+    line-height:1.85; word-break:break-word;
+  }
+  .ipinfo b { color:#a78bfa; }
+
+  /* IP bilgi kutusu ana sayfada */
+  #liveInfo {
+    font-size:12px; color:#9ca3af;
+    line-height:1.7;
+  }
+  #liveInfo b { color:#a78bfa; }
+</style>
+</head>
+<body>
+
+<!-- ================= ÜST BAR ================= -->
+<div class="topbar">
+  <div class="dots" id="dotsBtn">⋮</div>
+  <div class="logo">VANTORIUM <span>SORGU</span></div>
+  <div style="width:42px;"></div>
+</div>
+
+<!-- ================= YAN MENÜ ================= -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div class="logo">VANTORIUM <span>SORGU</span></div>
+    <div class="close" id="drawerClose">✕</div>
+  </div>
+
+  <div class="menu-label">SORGU İŞLEMLERİ</div>
+  <div class="menu-item" data-q="tc"><div class="ico">🔎</div> TC Sorgulama</div>
+  <div class="menu-item" data-q="tcpro"><div class="ico">⭐</div> TC Pro Sorgulama <span class="badge">PREMIUM</span></div>
+  <div class="menu-item" data-q="adsoyad"><div class="ico">👤</div> Ad Soyad Sorgulama</div>
+  <div class="menu-item" data-q="aile"><div class="ico">👨‍👩‍👧</div> Aile Sorgulama <span class="badge">PREMIUM</span></div>
+  <div class="menu-item" data-q="sulale"><div class="ico">🌳</div> Sülale Sorgulama <span class="badge">PREMIUM</span></div>
+  <div class="menu-item" data-q="tapu"><div class="ico">🏠</div> Tapu Sorgulama <span class="badge">PREMIUM</span></div>
+  <div class="menu-item" data-q="adaparsel"><div class="ico">🗺️</div> Ada Parsel Sorgulama</div>
+
+  <div class="menu-divider"></div>
+  <div class="menu-label">KİŞİ</div>
+  <div class="menu-item" data-q="tcgsm"><div class="ico">📱</div> TC → GSM</div>
+  <div class="menu-item" data-q="gsmtc"><div class="ico">📞</div> GSM → TC</div>
+  <div class="menu-item" data-q="adres"><div class="ico">📍</div> Adres Sorgulama</div>
+
+  <div class="menu-divider"></div>
+  <div class="menu-label">EĞİTİM</div>
+  <div class="menu-item" data-q="eokul"><div class="ico">🎓</div> E-Okul Sorgulama</div>
+
+  <div class="menu-divider"></div>
+  <div class="menu-label">SİSTEM</div>
+  <div class="menu-item" id="drawerLogin"><div class="ico">🔑</div> Giriş Yap</div>
+  <div class="menu-item" id="drawerRegister"><div class="ico">📝</div> Kaydol</div>
+  <div class="menu-item hidden" id="drawerSettings"><div class="ico">⚙️</div> Ayarlar</div>
+  <div class="menu-item hidden" id="drawerAdmin"><div class="ico">🛡️</div> Admin Paneli</div>
+  <div class="menu-item danger hidden" id="drawerLogout"><div class="ico">⏻</div> Güvenli Çıkış</div>
+</div>
+
+<!-- ================= ANA İÇERİK ================= -->
+<div class="container">
+
+  <div class="panel" id="userBar" style="display:none;">
+    <div class="status">Hoş geldin, <b id="uName" style="color:#f472b6;"></b> — Rol: <b id="uRole" style="color:#fbbf24;"></b></div>
+  </div>
+
+  <div class="panel">
+    <h2>🔍 Sorgulama Aracı</h2>
+    <div class="row" style="margin-bottom:14px;">
+      <select id="qType">
+        <option value="tc">TC Sorgulama</option>
+        <option value="tcpro">TC Pro Sorgulama ⭐</option>
+        <option value="adsoyad">Ad Soyad Sorgulama</option>
+        <option value="aile">Aile Sorgulama ⭐</option>
+        <option value="sulale">Sülale Sorgulama ⭐</option>
+        <option value="tcgsm">TC → GSM</option>
+        <option value="gsmtc">GSM → TC</option>
+        <option value="eokul">E-Okul Sorgulama</option>
+        <option value="adres">Adres Sorgulama</option>
+        <option value="tapu">Tapu Sorgulama ⭐</option>
+        <option value="adaparsel">Ada Parsel Sorgulama</option>
+      </select>
+    </div>
+    <div class="row">
+      <input id="qInput1" placeholder="TC / Ad / GSM / İl">
+      <input id="qInput2" placeholder="Soyad / İlçe" style="display:none;">
+      <button class="primary" id="qBtn">Sorgula</button>
+    </div>
+    <div class="status" id="qStatus"></div>
+    <div id="result" style="margin-top:12px;">Sonuç burada görünecek...</div>
+  </div>
+
+  <div class="panel">
+    <h2>⚡ Hızlı Sorgular</h2>
+    <div class="query-grid" id="quickGrid">
+      <button class="query-btn" data-q="tc">🔎 TC Sorgu</button>
+      <button class="query-btn" data-q="tcpro">⭐ TC Pro <span class="star">★</span></button>
+      <button class="query-btn" data-q="adsoyad">👤 Ad Soyad</button>
+      <button class="query-btn" data-q="aile">👨‍👩‍👧 Aile <span class="star">★</span></button>
+      <button class="query-btn" data-q="sulale">🌳 Sülale <span class="star">★</span></button>
+      <button class="query-btn" data-q="tapu">🏠 Tapu <span class="star">★</span></button>
+      <button class="query-btn" data-q="adaparsel">🗺️ Ada Parsel</button>
+      <button class="query-btn" data-q="tcgsm">📱 TC→GSM</button>
+      <button class="query-btn" data-q="gsmtc">📞 GSM→TC</button>
+      <button class="query-btn" data-q="adres">📍 Adres</button>
+      <button class="query-btn" data-q="eokul">🎓 E-Okul</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>📡 Bağlantı Bilgilerin</h2>
+    <div id="liveInfo">Yükleniyor...</div>
+  </div>
+</div>
+
+<!-- ================= GİRİŞ MODAL ================= -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <h3>🔑 Giriş Yap</h3>
+    <input id="loginUser" placeholder="Kullanıcı adı" autocomplete="off">
+    <input id="loginPass" type="password" placeholder="Şifre">
+    <button class="primary" id="loginBtn">Giriş</button>
+    <div class="switch">Hesabın yok mu? <span id="goRegister">Kaydol</span></div>
+  </div>
+</div>
+
+<!-- ================= KAYIT MODAL ================= -->
+<div class="modal-overlay" id="registerModal">
+  <div class="modal">
+    <h3>📝 Kaydol</h3>
+    <input id="regUser" placeholder="Kullanıcı adı" autocomplete="off">
+    <input id="regPass" type="password" placeholder="Şifre">
+    <input id="regPass2" type="password" placeholder="Şifre (tekrar)">
+    <button class="primary" id="registerBtn">Kaydol</button>
+    <div class="switch">Zaten hesabın var mı? <span id="goLogin">Giriş</span></div>
+  </div>
+</div>
+
+<!-- ================= AYARLAR MODAL ================= -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <h3>⚙️ Ayarlar</h3>
+    <div class="ipinfo" id="settingsInfo"></div>
+    <button class="primary" id="openTerminal" style="margin-top:16px; display:none; background:linear-gradient(135deg,#22ff88,#0ea5e9); color:#000;">💻 Kurucu Terminali</button>
+    <button class="primary" id="settingsClose" style="margin-top:10px; background:linear-gradient(135deg,#4b5563,#1f2937);">Kapat</button>
+  </div>
+</div>
+
+<!-- ================= TERMİNAL MODAL ================= -->
+<div class="modal-overlay" id="terminalModal">
+  <div class="modal" style="max-width:560px;">
+    <h3>💻 Kurucu Terminali</h3>
+    <div class="terminal" id="termOut"></div>
+    <input id="termIn" placeholder="/pre kullanıcı  |  /vip kullanıcı  |  /admin kullanıcı  |  help">
+    <button class="primary" id="termClose" style="margin-top:12px; background:linear-gradient(135deg,#4b5563,#1f2937);">Kapat</button>
+  </div>
+</div>
+
+<!-- ================= ADMIN MODAL ================= -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal" style="max-width:660px;">
+    <h3>🛡️ Admin Paneli — Ziyaretçi Kayıtları</h3>
+    <div class="terminal" id="adminOut" style="color:#a78bfa; border-color:#a78bfa;"></div>
+    <button class="primary" id="adminClose" style="margin-top:12px; background:linear-gradient(135deg,#4b5563,#1f2937);">Kapat</button>
+  </div>
+</div>
+
+<!-- ================= MÜZİK ================= -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="yalama.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+/* ============================================================
+   SABİTLER
+============================================================ */
+const API = 'https://apiv2.ajaxsystems.fun/';
+const USERS_KEY = 'vantorium_users';
+const SESSION_KEY = 'vantorium_session';
+const LOGS_KEY = 'vantorium_logs';
+const PREMIUM_QUERIES = ['tcpro','aile','sulale','tapu'];
+const PREMIUM_ROLES = ['premium','vip','kurucu','admin'];
+
+/* ============================================================
+   YARDIMCILAR
+============================================================ */
+const $ = id => document.getElementById(id);
+const getUsers = () => JSON.parse(localStorage.getItem(USERS_KEY) || '{}');
+const saveUsers = u => localStorage.setItem(USERS_KEY, JSON.stringify(u));
+const getLogs = () => JSON.parse(localStorage.getItem(LOGS_KEY) || '[]');
+const saveLogs = l => localStorage.setItem(LOGS_KEY, JSON.stringify(l));
+const getSession = () => JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+const setSession = s => localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+const clearSession = () => localStorage.removeItem(SESSION_KEY);
+
+/* Kurucu hesabını oluştur */
+(function initFounder(){
+  const users = getUsers();
+  if(!users['baba5231']){
+    users['baba5231'] = { pass:'annesiken3131', role:'kurucu', created:Date.now() };
+    saveUsers(users);
+  }
+})();
+
+/* ============================================================
+   CİHAZ & IP BİLGİSİ
+============================================================ */
+function detectBrowser(){
+  const ua = navigator.userAgent;
+  if(ua.includes('Edg')) return 'Edge';
+  if(ua.includes('OPR')||ua.includes('Opera')) return 'Opera';
+  if(ua.includes('Chrome')) return 'Chrome';
+  if(ua.includes('Firefox')) return 'Firefox';
+  if(ua.includes('Safari')) return 'Safari';
+  return 'Bilinmiyor';
+}
+function detectOS(){
+  const ua = navigator.userAgent;
+  if(ua.includes('Windows')) return 'Windows';
+  if(ua.includes('Android')) return 'Android';
+  if(ua.includes('iPhone')||ua.includes('iPad')) return 'iOS';
+  if(ua.includes('Mac')) return 'macOS';
+  if(ua.includes('Linux')) return 'Linux';
+  return 'Bilinmiyor';
+}
+function detectDevice(){
+  const ua = navigator.userAgent;
+  if(/Mobile|Android|iPhone/.test(ua)) return 'Mobil';
+  if(/iPad|Tablet/.test(ua)) return 'Tablet';
+  return 'Masaüstü';
+}
+
+async function collectDeviceInfo(){
+  const info = {
+    ip:'-', isp:'-', ulke:'-', sehir:'-', zip:'-', lat:'-', lon:'-',
+    device: detectDevice(),
+    platform: navigator.platform || '-',
+    userAgent: navigator.userAgent,
+    browser: detectBrowser(),
+    os: detectOS(),
+    dil: navigator.language,
+    ekran: screen.width+'x'+screen.height,
+    renk: screen.colorDepth+'bit',
+    cpu: navigator.hardwareConcurrency ? navigator.hardwareConcurrency+' çekirdek' : '-',
+    ram: navigator.deviceMemory ? navigator.deviceMemory+' GB' : '-',
+    zaman: new Date().toLocaleString('tr-TR')
+  };
+  try {
+    const r = await fetch('https://ipapi.co/json/');
+    const d = await r.json();
+    info.ip = d.ip || '-';
+    info.isp = d.org || '-';
+    info.ulke = d.country_name || '-';
+    info.sehir = (d.city||'-') + (d.region ? ', '+d.region : '');
+    info.zip = d.postal || '-';
+    info.lat = d.latitude || '-';
+    info.lon = d.longitude || '-';
+  } catch(e){}
+  return info;
+}
+
+async function logVisit(action){
+  try {
+    const info = await collectDeviceInfo();
+    info.action = action;
+    const logs = getLogs();
+    logs.unshift(info);
+    if(logs.length > 300) logs.length = 300;
+    saveLogs(logs);
+  } catch(e){}
+}
+
+/* Siteye adım atınca logla */
+logVisit('siteye_giris');
+
+/* ============================================================
+   CANLI BİLGİ KUTUSU
+============================================================ */
+(async function showLiveInfo(){
+  const i = await collectDeviceInfo();
+  $('liveInfo').innerHTML =
+    `<b>IP:</b> ${i.ip} &nbsp;|&nbsp; <b>ISP:</b> ${i.isp}<br>
+     <b>Ülke:</b> ${i.ulke} &nbsp;|&nbsp; <b>Şehir:</b> ${i.sehir} &nbsp;|&nbsp; <b>Zip:</b> ${i.zip}<br>
+     <b>Tarayıcı:</b> ${i.browser} &nbsp;|&nbsp; <b>OS:</b> ${i.os} &nbsp;|&nbsp; <b>Cihaz:</b> ${i.device}<br>
+     <b>Dil:</b> ${i.dil} &nbsp;|&nbsp; <b>Ekran:</b> ${i.ekran} &nbsp;|&nbsp; <b>CPU:</b> ${i.cpu}`;
+})();
+
+/* ============================================================
+   MÜZİK
+============================================================ */
+const music = $('bgMusic');
+music.volume = 0.35;
+function tryPlay(){
+  music.play().then(()=>{
+    document.removeEventListener('click', tryPlay);
+    document.removeEventListener('touchstart', tryPlay);
+  }).catch(()=>{});
+}
+document.addEventListener('click', tryPlay);
+document.addEventListener('touchstart', tryPlay);
+
+/* ============================================================
+   YAN MENÜ
+============================================================ */
+const drawer = $('drawer');
+const drawerOverlay = $('drawerOverlay');
+function openDrawer(){ drawer.classList.add('open'); drawerOverlay.classList.add('open'); }
+function closeDrawer(){ drawer.classList.remove('open'); drawerOverlay.classList.remove('open'); }
+
+$('dotsBtn').onclick = openDrawer;
+$('drawerClose').onclick = closeDrawer;
+drawerOverlay.onclick = closeDrawer;
+
+/* Menüdeki sorgu tıklamaları */
+document.querySelectorAll('.menu-item[data-q]').forEach(el => {
+  el.onclick = () => {
+    const q = el.dataset.q;
+    $('qType').value = q;
+    $('qType').onchange();
+    closeDrawer();
+    window.scrollTo({ top:0, behavior:'smooth' });
+    $('qInput1').focus();
+  };
+});
+
+/* ============================================================
+   MODAL YÖNETİMİ
+============================================================ */
+function openModal(id){ $(id).classList.add('open'); }
+function closeModal(id){ $(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open'); });
+});
+
+/* ============================================================
+   GİRİŞ / KAYIT
+============================================================ */
+$('drawerLogin').onclick = () => { closeDrawer(); openModal('loginModal'); };
+$('drawerRegister').onclick = () => { closeDrawer(); openModal('registerModal'); };
+$('goRegister').onclick = () => { closeModal('loginModal'); openModal('registerModal'); };
+$('goLogin').onclick = () => { closeModal('registerModal'); openModal('loginModal'); };
+
+$('loginBtn').onclick = () => {
+  const u = $('loginUser').value.trim();
+  const p = $('loginPass').value;
+  const users = getUsers();
+  if(!u || !p){ alert('Boş bırakma!'); return; }
+  if(!users[u] || users[u].pass !== p){ alert('Hatalı kullanıcı adı veya şifre!'); return; }
+  setSession({ user:u, role:users[u].role });
+  logVisit('giris_yapti: '+u);
+  closeModal('loginModal');
+  $('loginUser').value=''; $('loginPass').value='';
+  refreshUI();
+  alert('Giriş başarılı!');
+};
+
+$('registerBtn').onclick = () => {
+  const u = $('regUser').value.trim();
+  const p = $('regPass').value;
+  const p2 = $('regPass2').value;
+  if(!u || !p){ alert('Boş bırakma!'); return; }
+  if(u.length < 3){ alert('Kullanıcı adı en az 3 karakter!'); return; }
+  if(p.length < 4){ alert('Şifre en az 4 karakter!'); return; }
+  if(p !== p2){ alert('Şifreler uyuşmuyor!'); return; }
+  const users = getUsers();
+  if(users[u]){ alert('Bu kullanıcı adı alınmış!'); return; }
+  users[u] = { pass:p, role:'user', created:Date.now() };
+  saveUsers(users);
+  setSession({ user:u, role:'user' });
+  logVisit('kaydoldu: '+u);
+  closeModal('registerModal');
+  $('regUser').value=''; $('regPass').value=''; $('regPass2').value='';
+  refreshUI();
+  alert('Kayıt başarılı! Hoş geldin '+u);
+};
+
+/* ============================================================
+   UI YENİLE
+============================================================ */
+function refreshUI(){
+  const s = getSession();
+  const logged = !!s;
+  $('userBar').style.display = logged ? 'block' : 'none';
+  if(logged){
+    $('uName').textContent = s.user;
+    $('uRole').textContent = s.role;
+  }
+  $('drawerLogin').classList.toggle('hidden', logged);
+  $('drawerRegister').classList.toggle('hidden', logged);
+  $('drawerSettings').classList.toggle('hidden', !logged);
+  $('drawerLogout').classList.toggle('hidden', !logged);
+  $('drawerAdmin').classList.toggle('hidden', !(logged && (s.role==='admin'||s.role==='kurucu')));
+  updateQuickLocks();
+}
+
+/* ============================================================
+   AYARLAR
+============================================================ */
+$('drawerSettings').onclick = async () => {
+  closeDrawer();
+  const info = await collectDeviceInfo();
+  $('settingsInfo').innerHTML =
+    `<b>Kullanıcı:</b> ${getSession().user}<br>
+     <b>Rol:</b> ${getSession().role}<br><hr style="border-color:#333;margin:8px 0;">
+     <b>IP:</b> ${info.ip}<br>
+     <b>ISP:</b> ${info.isp}<br>
+     <b>Ülke:</b> ${info.ulke}<br>
+     <b>Şehir:</b> ${info.sehir}<br>
+     <b>Zip:</b> ${info.zip}<br>
+     <b>Koordinat:</b> ${info.lat}, ${info.lon}<br>
+     <b>Tarayıcı:</b> ${info.browser}<br>
+     <b>İşletim Sistemi:</b> ${info.os}<br>
+     <b>Cihaz:</b> ${info.device}<br>
+     <b>Platform:</b> ${info.platform}<br>
+     <b>Dil:</b> ${info.dil}<br>
+     <b>Ekran:</b> ${info.ekran} / ${info.renk}<br>
+     <b>CPU:</b> ${info.cpu}<br>
+     <b>RAM:</b> ${info.ram}<br>
+     <b>Zaman:</b> ${info.zaman}`;
+  const s = getSession();
+  $('openTerminal').style.display = (s && s.role==='kurucu') ? 'block' : 'none';
+  openModal('settingsModal');
+};
+$('settingsClose').onclick = () => closeModal('settingsModal');
+
+/* ============================================================
+   ÇIKIŞ
+============================================================ */
+$('drawerLogout').onclick = () => {
+  if(!confirm('Çıkış yapmak istediğine emin misin?')) return;
+  clearSession();
+  closeDrawer();
+  refreshUI();
+  alert('Çıkış yapıldı.');
+};
+
+/* ============================================================
+   KURUCU TERMİNALİ
+============================================================ */
+const termOut = $('termOut');
+const termIn = $('termIn');
+function termWrite(t){ termOut.innerHTML += t + '<br>'; termOut.scrollTop = termOut.scrollHeight; }
+
+$('openTerminal').onclick = () => {
+  termOut.innerHTML = '';
+  termWrite('╔══════════════════════════════════════╗');
+  termWrite('║  VANTORIUM KURUCU TERMİNALİ v1.0     ║');
+  termWrite('╚══════════════════════════════════════╝');
+  termWrite('');
+  termWrite('Komutlar:');
+  termWrite('  /pre &lt;user&gt;   → premium yap');
+  termWrite('  /vip &lt;user&gt;   → vip yap');
+  termWrite('  /admin &lt;user&gt; → admin yap');
+  termWrite('  list          → kullanıcıları listele');
+  termWrite('  clear         → ekranı temizle');
+  termWrite('');
+  closeModal('settingsModal');
+  openModal('terminalModal');
+  setTimeout(()=>termIn.focus(), 200);
+};
+$('termClose').onclick = () => closeModal('terminalModal');
+
+termIn.addEventListener('keydown', e => {
+  if(e.key !== 'Enter') return;
+  const cmd = termIn.value.trim();
+  termIn.value = '';
+  if(!cmd) return;
+  termWrite('<span style="color:#f472b6;">> '+cmd+'</span>');
+
+  const parts = cmd.split(/\s+/);
+  const users = getUsers();
+  const c = parts[0].toLowerCase();
+
+  if(c==='/pre' || c==='/vip' || c==='/admin'){
+    const target = parts[1];
+    if(!target){ termWrite('<span style="color:#f87171;">✖ Kullanıcı adı gir!</span>'); return; }
+    if(!users[target]){ termWrite('<span style="color:#f87171;">✖ Kullanıcı bulunamadı: '+target+'</span>'); return; }
+    users[target].role = c.slice(1);
+    saveUsers(users);
+    termWrite('<span style="color:#22ff88;">✔ '+target+' → rol: '+users[target].role+'</span>');
+  }
+  else if(c==='list'){
+    const keys = Object.keys(users);
+    termWrite('Toplam '+keys.length+' kullanıcı:');
+    keys.forEach(u => {
+      const r = users[u].role;
+      const color = r==='kurucu'?'#fbbf24': r==='admin'?'#f472b6': r==='vip'?'#a78bfa': r==='premium'?'#22d3ee':'#9ca3af';
+      termWrite('  • '+u+' <span style="color:'+color+';">['+r+']</span>');
+    });
+  }
+  else if(c==='clear'){ termOut.innerHTML=''; }
+  else if(c==='help'){
+    termWrite('/pre &lt;user&gt; — premium');
+    termWrite('/vip &lt;user&gt; — vip');
+    termWrite('/admin &lt;user&gt; — admin');
+    termWrite('list — listele');
+    termWrite('clear — temizle');
+  }
+  else { termWrite('<span style="color:#f87171;">✖ Bilinmeyen komut: '+parts[0]+'</span>'); }
+});
+
+/* ============================================================
+   ADMİN PANEL
+============================================================ */
+$('drawerAdmin').onclick = () => {
+  closeDrawer();
+  const logs = getLogs();
+  const out = $('adminOut');
+  if(!logs.length){
+    out.textContent = 'Henüz kayıt yok.';
+  } else {
+    out.innerHTML = logs.map((l,i) =>
+      `<div style="margin-bottom:12px;border-bottom:1px solid #333;padding-bottom:10px;">
+        <b style="color:#f472b6;">#${i+1} — ${l.action}</b><br>
+        <b>IP:</b> ${l.ip} &nbsp;|&nbsp; <b>ISP:</b> ${l.isp}<br>
+        <b>Ülke:</b> ${l.ulke} &nbsp;|&nbsp; <b>Şehir:</b> ${l.sehir} &nbsp;|&nbsp; <b>Zip:</b> ${l.zip}<br>
+        <b>Koor:</b> ${l.lat}, ${l.lon}<br>
+        <b>Tarayıcı:</b> ${l.browser} &nbsp;|&nbsp; <b>OS:</b> ${l.os} &nbsp;|&nbsp; <b>Cihaz:</b> ${l.device}<br>
+        <b>Platform:</b> ${l.platform} &nbsp;|&nbsp; <b>Dil:</b> ${l.dil}<br>
+        <b>Ekran:</b> ${l.ekran} / ${l.renk} &nbsp;|&nbsp; <b>CPU:</b> ${l.cpu} &nbsp;|&nbsp; <b>RAM:</b> ${l.ram}<br>
+        <b>UA:</b> <span style="font-size:10.5px;">${l.userAgent}</span><br>
+        <b>Zaman:</b> ${l.zaman}
+      </div>`
+    ).join('');
+  }
+  openModal('adminModal');
+};
+$('adminClose').onclick = () => closeModal('adminModal');
+
+/* ============================================================
+   SORGU SİSTEMİ
+============================================================ */
+const qType = $('qType');
+const qInput1 = $('qInput1');
+const qInput2 = $('qInput2');
+const qStatus = $('qStatus');
+const result = $('result');
+
+qType.onchange = () => {
+  const v = qType.value;
+  qInput1.value = ''; qInput2.value = '';
+  if(v === 'adsoyad'){
+    qInput1.placeholder = 'Ad';
+    qInput2.placeholder = 'Soyad';
+    qInput2.style.display = 'block';
+  } else if(v === 'adaparsel'){
+    qInput1.placeholder = 'İl (örn: İSTANBUL)';
+    qInput2.placeholder = 'İlçe (örn: KADIKÖY)';
+    qInput2.style.display = 'block';
+  } else if(v === 'gsmtc'){
+    qInput1.placeholder = 'GSM (örn: 5550000000)';
+    qInput2.style.display = 'none';
+  } else {
+    qInput1.placeholder = 'TC Kimlik No';
+    qInput2.style.display = 'none';
+  }
+};
+
+function buildURL(type, v1, v2){
+  const e = encodeURIComponent;
+  switch(type){
+    case 'tc':       return API+'tc.php?tc='+e(v1);
+    case 'tcpro':    return API+'tcpro.php?tc='+e(v1);
+    case 'adsoyad':  return API+'adsoyad.php?ad='+e(v1)+'&soyad='+e(v2);
+    case 'aile':     return API+'aile.php?tc='+e(v1);
+    case 'sulale':   return API+'sulale.php?tc='+e(v1);
+    case 'tcgsm':    return API+'tcgsm.php?tc='+e(v1);
+    case 'gsmtc':    return API+'gsmtc.php?gsm='+e(v1)+'&auth=fire';
+    case 'eokul':    return API+'eokul.php?tc='+e(v1);
+    case 'adres':    return API+'adres.php?tc='+e(v1);
+    case 'tapu':     return API+'tapu.php?tc='+e(v1);
+    case 'adaparsel':return API+'adaparsel.php?il='+e(v1)+'&ilce='+e(v2);
+  }
+  return '';
+}
+
+async function doQuery(type, v1, v2){
+  const s = getSession();
+  if(PREMIUM_QUERIES.includes(type)){
+    if(!s || !PREMIUM_ROLES.includes(s.role)){
+      result.innerHTML = '<span class="error">🔒 Bu sorgu sadece PREMIUM, VIP, ADMIN ve KURUCU içindir!</span>';
+      qStatus.textContent = 'Yetki yok';
+      return;
+    }
+  }
+  if(!v1){ qStatus.textContent = '⚠ Değer gir!'; return; }
+  if((type==='adsoyad'||type==='adaparsel') && !v2){ qStatus.textContent = '⚠ İkinci alanı da doldur!'; return; }
+
+  qStatus.textContent = '⏳ Sorgulanıyor...';
+  result.textContent = 'Yükleniyor...';
+
+  try {
+    const r = await fetch(buildURL(type, v1, v2));
+    const text = await r.text();
+    try {
+      const data = JSON.parse(text);
+      result.textContent = JSON.stringify(data, null, 2);
+    } catch(e){
+      result.textContent = text;
+    }
+    qStatus.textContent = '✔ Tamamlandı';
+  } catch(e){
+    result.innerHTML = '<span class="error">✖ Hata: '+e.message+'</span>';
+    qStatus.textContent = '✖ Hata';
+  }
+}
+
+$('qBtn').onclick = () => {
+  doQuery(qType.value, qInput1.value.trim(), qInput2.value.trim());
+};
+
+/* Enter ile sorgula */
+qInput1.addEventListener('keydown', e => { if(e.key==='Enter') $('qBtn').click(); });
+qInput2.addEventListener('keydown', e => { if(e.key==='Enter') $('qBtn').click(); });
+
+/* Hızlı sorgu butonları */
+document.querySelectorAll('.query-btn').forEach(btn => {
+  btn.onclick = () => {
+    const q = btn.dataset.q;
+    qType.value = q;
+    qType.onchange();
+    if((q==='adsoyad'||q==='adaparsel') && (!qInput1.value || !qInput2.value)){
+      qStatus.textContent = '⚠ İki alanı da doldur!';
+      qInput1.focus();
+      return;
+    }
+    if(!qInput1.value){
+      qStatus.textContent = '⚠ Değer gir!';
+      qInput1.focus();
+      return;
+    }
+    doQuery(q, qInput1.value.trim(), qInput2.value.trim());
+  };
+});
+
+/* Kilit güncelleme */
+function updateQuickLocks(){
+  const s = getSession();
+  const ok = s && PREMIUM_ROLES.includes(s.role);
+  document.querySelectorAll('.query-btn').forEach(b => {
+    if(PREMIUM_QUERIES.includes(b.dataset.q)){
+      b.classList.toggle('locked', !ok);
+    }
+  });
+  document.querySelectorAll('.menu-item[data-q]').forEach(el => {
+    if(PREMIUM_QUERIES.includes(el.dataset.q)){
+      el.classList.toggle('locked', !ok);
+    }
+  });
+}
+
+/* ============================================================
+   BAŞLAT
+============================================================ */
+refreshUI();
+qType.onchange();
+</script>
+</body>
+</html>
