@@ -10,15 +10,16 @@
   body {
     background: url('arkaplan.jpg') center/cover fixed no-repeat, #0a0a12;
     color:#e6e6f0;
-    overflow-x:hidden;
+    overflow:hidden;
     -webkit-tap-highlight-color:transparent;
   }
   body::before {
     content:'';
     position:fixed; inset:0;
-    background: rgba(5,5,15,0.82);
+    background: rgba(5,5,15,0.85);
     z-index:-1;
   }
+
   /* ============ ÜST BAR ============ */
   .topbar {
     display:flex; align-items:center; justify-content:space-between;
@@ -26,7 +27,7 @@
     background:rgba(15,15,30,0.75);
     border-bottom:1px solid rgba(120,80,255,0.3);
     backdrop-filter: blur(12px);
-    position:sticky; top:0; z-index:50;
+    position:fixed; top:0; left:0; right:0; z-index:50;
   }
   .logo { font-weight:800; font-size:20px; color:#a78bfa; letter-spacing:1.5px; }
   .logo span { color:#f472b6; }
@@ -39,6 +40,20 @@
     transition:.2s; color:#a78bfa;
   }
   .dots:active { transform:scale(0.92); background:rgba(120,80,255,0.35); }
+
+  /* ============ BOŞ ANA SAYFA ============ */
+  .empty-home {
+    position:fixed; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:14px;
+    color:#4a4a6a; font-size:13px;
+    padding-top:60px;
+    text-align:center;
+    user-select:none;
+  }
+  .empty-home .big {
+    font-size:60px; opacity:.15;
+  }
 
   /* ============ YAN MENÜ ============ */
   .drawer-overlay {
@@ -114,75 +129,7 @@
     background:rgba(120,80,255,0.15);
   }
 
-  /* ============ ANA İÇERİK ============ */
-  .container { max-width:900px; margin:22px auto; padding:0 16px 80px; }
-  .panel {
-    background:rgba(20,20,40,0.78);
-    border:1px solid rgba(120,80,255,0.3);
-    border-radius:18px;
-    padding:20px;
-    margin-bottom:18px;
-    backdrop-filter: blur(10px);
-  }
-  .panel h2 {
-    color:#a78bfa; margin-bottom:14px;
-    font-size:17px; font-weight:700;
-    display:flex; align-items:center; gap:8px;
-  }
-  .row { display:flex; gap:10px; flex-wrap:wrap; }
-  input, select {
-    flex:1; min-width:150px;
-    background:rgba(10,10,25,0.85);
-    border:1px solid rgba(120,80,255,0.4);
-    border-radius:12px; padding:13px 14px;
-    color:#e6e6f0; font-size:14.5px; outline:none;
-    transition:.2s;
-  }
-  input:focus, select:focus {
-    border-color:#a78bfa;
-    box-shadow:0 0 0 3px rgba(120,80,255,0.22);
-  }
-  button.primary {
-    background:linear-gradient(135deg,#7c3aed,#ec4899);
-    border:none; color:#fff; padding:13px 24px;
-    border-radius:12px; cursor:pointer; font-weight:700;
-    font-size:14.5px; transition:.2s;
-    white-space:nowrap;
-  }
-  button.primary:active { transform:scale(0.96); }
-  button.primary:disabled { opacity:.5; cursor:not-allowed; }
-
-  .query-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-    gap:11px;
-  }
-  .query-btn {
-    background:rgba(120,80,255,0.12);
-    border:1px solid rgba(120,80,255,0.35);
-    color:#e6e6f0; padding:15px 12px;
-    border-radius:12px; cursor:pointer;
-    font-size:13.5px; transition:.18s;
-    display:flex; align-items:center; gap:8px;
-    text-align:left;
-  }
-  .query-btn:active { transform:scale(0.96); background:rgba(120,80,255,0.3); }
-  .query-btn .star { color:#fbbf24; font-size:13px; margin-left:auto; }
-  .query-btn.locked { opacity:.5; }
-
-  #result {
-    background:rgba(5,5,15,0.92);
-    border:1px solid rgba(120,80,255,0.4);
-    border-radius:14px; padding:16px;
-    min-height:130px; max-height:480px; overflow:auto;
-    white-space:pre-wrap; font-family:'Consolas',monospace;
-    font-size:12.5px; line-height:1.55;
-    word-break:break-word;
-  }
-  .status { color:#a78bfa; margin-top:12px; font-size:13px; }
-  .error { color:#f87171; }
-
-  /* ============ MODAL ============ */
+  /* ============ MODAL GENEL ============ */
   .modal-overlay {
     display:none; position:fixed; inset:0;
     background:rgba(0,0,0,0.78);
@@ -212,6 +159,75 @@
   }
   .modal .switch span { color:#a78bfa; cursor:pointer; font-weight:600; }
 
+  /* ============ SORGU PANELİ (KÜÇÜK MODERN) ============ */
+  .query-modal {
+    max-width:480px;
+    padding:20px;
+  }
+  .query-modal .qhead {
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:16px;
+  }
+  .query-modal .qhead .qico {
+    width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#7c3aed,#ec4899);
+    border-radius:11px; font-size:18px;
+  }
+  .query-modal .qhead h3 {
+    margin:0; text-align:left; font-size:16px;
+    color:#fff;
+  }
+  .query-modal .qhead .qsub {
+    font-size:11.5px; color:#9ca3af; margin-top:2px;
+  }
+  .query-modal .qclose {
+    margin-left:auto; cursor:pointer;
+    color:#9ca3af; font-size:20px;
+    padding:4px 10px; border-radius:8px;
+  }
+  .query-modal .qclose:active { background:rgba(120,80,255,0.2); }
+
+  input, select {
+    width:100%;
+    background:rgba(10,10,25,0.85);
+    border:1px solid rgba(120,80,255,0.4);
+    border-radius:12px; padding:13px 14px;
+    color:#e6e6f0; font-size:14.5px; outline:none;
+    transition:.2s; margin-bottom:10px;
+  }
+  input:focus, select:focus {
+    border-color:#a78bfa;
+    box-shadow:0 0 0 3px rgba(120,80,255,0.22);
+  }
+  button.primary {
+    background:linear-gradient(135deg,#7c3aed,#ec4899);
+    border:none; color:#fff; padding:13px 24px;
+    border-radius:12px; cursor:pointer; font-weight:700;
+    font-size:14.5px; transition:.2s;
+    white-space:nowrap; width:100%;
+  }
+  button.primary:active { transform:scale(0.97); }
+
+  .q-status {
+    color:#a78bfa; font-size:12.5px;
+    margin-top:4px; text-align:center;
+    min-height:16px;
+  }
+  .q-result {
+    background:rgba(5,5,15,0.92);
+    border:1px solid rgba(120,80,255,0.4);
+    border-radius:14px; padding:14px;
+    margin-top:12px;
+    min-height:100px; max-height:280px; overflow:auto;
+    white-space:pre-wrap; font-family:'Consolas',monospace;
+    font-size:12px; line-height:1.55;
+    word-break:break-word;
+    display:none;
+  }
+  .q-result.show { display:block; }
+  .error { color:#f87171; }
+
   .terminal {
     background:#000; color:#22ff88;
     font-family:'Consolas',monospace;
@@ -224,20 +240,28 @@
     background:#000; color:#22ff88;
     border:1px solid #22ff88;
     font-family:'Consolas',monospace;
+    margin:0;
   }
   .hidden { display:none !important; }
   .ipinfo {
     font-size:12.5px; color:#b8b8d0;
     line-height:1.85; word-break:break-word;
+    margin-bottom:14px;
   }
   .ipinfo b { color:#a78bfa; }
 
-  /* IP bilgi kutusu ana sayfada */
-  #liveInfo {
-    font-size:12px; color:#9ca3af;
-    line-height:1.7;
+  .btn-secondary {
+    background:linear-gradient(135deg,#4b5563,#1f2937);
+    border:none; color:#fff; padding:13px 24px;
+    border-radius:12px; cursor:pointer; font-weight:700;
+    font-size:14.5px; transition:.2s; width:100%;
+    margin-top:10px;
   }
-  #liveInfo b { color:#a78bfa; }
+  .btn-secondary:active { transform:scale(0.97); }
+  .btn-green {
+    background:linear-gradient(135deg,#22ff88,#0ea5e9);
+    color:#000;
+  }
 </style>
 </head>
 <body>
@@ -249,6 +273,12 @@
   <div style="width:42px;"></div>
 </div>
 
+<!-- ================= BOŞ ANA SAYFA ================= -->
+<div class="empty-home">
+  <div class="big">⋮</div>
+  <div>Başlamak için sol üstteki menüyü aç</div>
+</div>
+
 <!-- ================= YAN MENÜ ================= -->
 <div class="drawer-overlay" id="drawerOverlay"></div>
 <div class="drawer" id="drawer">
@@ -257,87 +287,37 @@
     <div class="close" id="drawerClose">✕</div>
   </div>
 
-  <div class="menu-label">SORGU İŞLEMLERİ</div>
-  <div class="menu-item" data-q="tc"><div class="ico">🔎</div> TC Sorgulama</div>
-  <div class="menu-item" data-q="tcpro"><div class="ico">⭐</div> TC Pro Sorgulama <span class="badge">PREMIUM</span></div>
-  <div class="menu-item" data-q="adsoyad"><div class="ico">👤</div> Ad Soyad Sorgulama</div>
-  <div class="menu-item" data-q="aile"><div class="ico">👨‍👩‍👧</div> Aile Sorgulama <span class="badge">PREMIUM</span></div>
-  <div class="menu-item" data-q="sulale"><div class="ico">🌳</div> Sülale Sorgulama <span class="badge">PREMIUM</span></div>
-  <div class="menu-item" data-q="tapu"><div class="ico">🏠</div> Tapu Sorgulama <span class="badge">PREMIUM</span></div>
-  <div class="menu-item" data-q="adaparsel"><div class="ico">🗺️</div> Ada Parsel Sorgulama</div>
-
-  <div class="menu-divider"></div>
-  <div class="menu-label">KİŞİ</div>
-  <div class="menu-item" data-q="tcgsm"><div class="ico">📱</div> TC → GSM</div>
-  <div class="menu-item" data-q="gsmtc"><div class="ico">📞</div> GSM → TC</div>
-  <div class="menu-item" data-q="adres"><div class="ico">📍</div> Adres Sorgulama</div>
-
-  <div class="menu-divider"></div>
-  <div class="menu-label">EĞİTİM</div>
-  <div class="menu-item" data-q="eokul"><div class="ico">🎓</div> E-Okul Sorgulama</div>
-
-  <div class="menu-divider"></div>
-  <div class="menu-label">SİSTEM</div>
-  <div class="menu-item" id="drawerLogin"><div class="ico">🔑</div> Giriş Yap</div>
-  <div class="menu-item" id="drawerRegister"><div class="ico">📝</div> Kaydol</div>
-  <div class="menu-item hidden" id="drawerSettings"><div class="ico">⚙️</div> Ayarlar</div>
-  <div class="menu-item hidden" id="drawerAdmin"><div class="ico">🛡️</div> Admin Paneli</div>
-  <div class="menu-item danger hidden" id="drawerLogout"><div class="ico">⏻</div> Güvenli Çıkış</div>
-</div>
-
-<!-- ================= ANA İÇERİK ================= -->
-<div class="container">
-
-  <div class="panel" id="userBar" style="display:none;">
-    <div class="status">Hoş geldin, <b id="uName" style="color:#f472b6;"></b> — Rol: <b id="uRole" style="color:#fbbf24;"></b></div>
+  <div id="guestMenu">
+    <div class="menu-label">SİSTEM</div>
+    <div class="menu-item" id="drawerLogin"><div class="ico">🔑</div> Giriş Yap</div>
+    <div class="menu-item" id="drawerRegister"><div class="ico">📝</div> Kaydol</div>
   </div>
 
-  <div class="panel">
-    <h2>🔍 Sorgulama Aracı</h2>
-    <div class="row" style="margin-bottom:14px;">
-      <select id="qType">
-        <option value="tc">TC Sorgulama</option>
-        <option value="tcpro">TC Pro Sorgulama ⭐</option>
-        <option value="adsoyad">Ad Soyad Sorgulama</option>
-        <option value="aile">Aile Sorgulama ⭐</option>
-        <option value="sulale">Sülale Sorgulama ⭐</option>
-        <option value="tcgsm">TC → GSM</option>
-        <option value="gsmtc">GSM → TC</option>
-        <option value="eokul">E-Okul Sorgulama</option>
-        <option value="adres">Adres Sorgulama</option>
-        <option value="tapu">Tapu Sorgulama ⭐</option>
-        <option value="adaparsel">Ada Parsel Sorgulama</option>
-      </select>
-    </div>
-    <div class="row">
-      <input id="qInput1" placeholder="TC / Ad / GSM / İl">
-      <input id="qInput2" placeholder="Soyad / İlçe" style="display:none;">
-      <button class="primary" id="qBtn">Sorgula</button>
-    </div>
-    <div class="status" id="qStatus"></div>
-    <div id="result" style="margin-top:12px;">Sonuç burada görünecek...</div>
-  </div>
+  <div id="memberMenu" class="hidden">
+    <div class="menu-label">SORGU İŞLEMLERİ</div>
+    <div class="menu-item" data-q="tc"><div class="ico">🔎</div> TC Sorgulama</div>
+    <div class="menu-item" data-q="tcpro"><div class="ico">⭐</div> TC Pro Sorgulama <span class="badge">PREMIUM</span></div>
+    <div class="menu-item" data-q="adsoyad"><div class="ico">👤</div> Ad Soyad Sorgulama</div>
+    <div class="menu-item" data-q="aile"><div class="ico">👨‍👩‍👧</div> Aile Sorgulama <span class="badge">PREMIUM</span></div>
+    <div class="menu-item" data-q="sulale"><div class="ico">🌳</div> Sülale Sorgulama <span class="badge">PREMIUM</span></div>
+    <div class="menu-item" data-q="tapu"><div class="ico">🏠</div> Tapu Sorgulama <span class="badge">PREMIUM</span></div>
+    <div class="menu-item" data-q="adaparsel"><div class="ico">🗺️</div> Ada Parsel Sorgulama</div>
 
-  <div class="panel">
-    <h2>⚡ Hızlı Sorgular</h2>
-    <div class="query-grid" id="quickGrid">
-      <button class="query-btn" data-q="tc">🔎 TC Sorgu</button>
-      <button class="query-btn" data-q="tcpro">⭐ TC Pro <span class="star">★</span></button>
-      <button class="query-btn" data-q="adsoyad">👤 Ad Soyad</button>
-      <button class="query-btn" data-q="aile">👨‍👩‍👧 Aile <span class="star">★</span></button>
-      <button class="query-btn" data-q="sulale">🌳 Sülale <span class="star">★</span></button>
-      <button class="query-btn" data-q="tapu">🏠 Tapu <span class="star">★</span></button>
-      <button class="query-btn" data-q="adaparsel">🗺️ Ada Parsel</button>
-      <button class="query-btn" data-q="tcgsm">📱 TC→GSM</button>
-      <button class="query-btn" data-q="gsmtc">📞 GSM→TC</button>
-      <button class="query-btn" data-q="adres">📍 Adres</button>
-      <button class="query-btn" data-q="eokul">🎓 E-Okul</button>
-    </div>
-  </div>
+    <div class="menu-divider"></div>
+    <div class="menu-label">KİŞİ</div>
+    <div class="menu-item" data-q="tcgsm"><div class="ico">📱</div> TC → GSM</div>
+    <div class="menu-item" data-q="gsmtc"><div class="ico">📞</div> GSM → TC</div>
+    <div class="menu-item" data-q="adres"><div class="ico">📍</div> Adres Sorgulama</div>
 
-  <div class="panel">
-    <h2>📡 Bağlantı Bilgilerin</h2>
-    <div id="liveInfo">Yükleniyor...</div>
+    <div class="menu-divider"></div>
+    <div class="menu-label">EĞİTİM</div>
+    <div class="menu-item" data-q="eokul"><div class="ico">🎓</div> E-Okul Sorgulama</div>
+
+    <div class="menu-divider"></div>
+    <div class="menu-label">HESAP</div>
+    <div class="menu-item" id="drawerSettings"><div class="ico">⚙️</div> Ayarlar</div>
+    <div class="menu-item hidden" id="drawerAdmin"><div class="ico">🛡️</div> Admin Paneli</div>
+    <div class="menu-item danger" id="drawerLogout"><div class="ico">⏻</div> Güvenli Çıkış</div>
   </div>
 </div>
 
@@ -364,13 +344,34 @@
   </div>
 </div>
 
+<!-- ================= SORGU PANELİ MODAL ================= -->
+<div class="modal-overlay" id="queryModal">
+  <div class="modal query-modal">
+    <div class="qhead">
+      <div class="qico" id="qIco">🔎</div>
+      <div>
+        <h3 id="qTitle">Sorgu</h3>
+        <div class="qsub" id="qSub">Bilgi gir ve sorgula</div>
+      </div>
+      <div class="qclose" id="qClose">✕</div>
+    </div>
+
+    <input id="qInput1" placeholder="Değer gir" autocomplete="off">
+    <input id="qInput2" placeholder="İkinci alan" style="display:none;" autocomplete="off">
+
+    <button class="primary" id="qBtn">Sorgula</button>
+    <div class="q-status" id="qStatus"></div>
+    <div class="q-result" id="qResult"></div>
+  </div>
+</div>
+
 <!-- ================= AYARLAR MODAL ================= -->
 <div class="modal-overlay" id="settingsModal">
   <div class="modal">
     <h3>⚙️ Ayarlar</h3>
     <div class="ipinfo" id="settingsInfo"></div>
-    <button class="primary" id="openTerminal" style="margin-top:16px; display:none; background:linear-gradient(135deg,#22ff88,#0ea5e9); color:#000;">💻 Kurucu Terminali</button>
-    <button class="primary" id="settingsClose" style="margin-top:10px; background:linear-gradient(135deg,#4b5563,#1f2937);">Kapat</button>
+    <button class="primary btn-green hidden" id="openTerminal">💻 Kurucu Terminali</button>
+    <button class="btn-secondary" id="settingsClose">Kapat</button>
   </div>
 </div>
 
@@ -380,7 +381,7 @@
     <h3>💻 Kurucu Terminali</h3>
     <div class="terminal" id="termOut"></div>
     <input id="termIn" placeholder="/pre kullanıcı  |  /vip kullanıcı  |  /admin kullanıcı  |  help">
-    <button class="primary" id="termClose" style="margin-top:12px; background:linear-gradient(135deg,#4b5563,#1f2937);">Kapat</button>
+    <button class="btn-secondary" id="termClose">Kapat</button>
   </div>
 </div>
 
@@ -389,7 +390,7 @@
   <div class="modal" style="max-width:660px;">
     <h3>🛡️ Admin Paneli — Ziyaretçi Kayıtları</h3>
     <div class="terminal" id="adminOut" style="color:#a78bfa; border-color:#a78bfa;"></div>
-    <button class="primary" id="adminClose" style="margin-top:12px; background:linear-gradient(135deg,#4b5563,#1f2937);">Kapat</button>
+    <button class="btn-secondary" id="adminClose">Kapat</button>
   </div>
 </div>
 
@@ -409,6 +410,20 @@ const LOGS_KEY = 'vantorium_logs';
 const PREMIUM_QUERIES = ['tcpro','aile','sulale','tapu'];
 const PREMIUM_ROLES = ['premium','vip','kurucu','admin'];
 
+const QUERY_INFO = {
+  tc:       { ico:'🔎', title:'TC Sorgulama',        sub:'TC kimlik numarası ile sorgula',       ph1:'TC Kimlik No',     ph2:'' },
+  tcpro:    { ico:'⭐', title:'TC Pro Sorgulama',    sub:'Detaylı TC sorgusu (PREMIUM)',         ph1:'TC Kimlik No',     ph2:'' },
+  adsoyad:  { ico:'👤', title:'Ad Soyad Sorgulama',  sub:'Ad ve soyad ile sorgula',              ph1:'Ad',               ph2:'Soyad' },
+  aile:     { ico:'👨‍👩‍👧', title:'Aile Sorgulama',     sub:'Aile bilgileri (PREMIUM)',             ph1:'TC Kimlik No',     ph2:'' },
+  sulale:   { ico:'🌳', title:'Sülale Sorgulama',    sub:'Sülale bilgileri (PREMIUM)',           ph1:'TC Kimlik No',     ph2:'' },
+  tapu:     { ico:'🏠', title:'Tapu Sorgulama',      sub:'Tapu kaydı (PREMIUM)',                 ph1:'TC Kimlik No',     ph2:'' },
+  adaparsel:{ ico:'🗺️', title:'Ada Parsel Sorgulama',sub:'İl ve ilçe ile sorgula',               ph1:'İl (örn: İSTANBUL)', ph2:'İlçe (örn: KADIKÖY)' },
+  tcgsm:    { ico:'📱', title:'TC → GSM',            sub:'TC ile GSM numarası bul',              ph1:'TC Kimlik No',     ph2:'' },
+  gsmtc:    { ico:'📞', title:'GSM → TC',            sub:'GSM ile TC bul',                       ph1:'GSM (örn: 5550000000)', ph2:'' },
+  adres:    { ico:'📍', title:'Adres Sorgulama',     sub:'TC ile adres bul',                     ph1:'TC Kimlik No',     ph2:'' },
+  eokul:    { ico:'🎓', title:'E-Okul Sorgulama',    sub:'TC ile e-okul bilgisi',                ph1:'TC Kimlik No',     ph2:'' }
+};
+
 /* ============================================================
    YARDIMCILAR
 ============================================================ */
@@ -421,7 +436,7 @@ const getSession = () => JSON.parse(localStorage.getItem(SESSION_KEY) || 'null')
 const setSession = s => localStorage.setItem(SESSION_KEY, JSON.stringify(s));
 const clearSession = () => localStorage.removeItem(SESSION_KEY);
 
-/* Kurucu hesabını oluştur */
+/* Kurucu hesabı */
 (function initFounder(){
   const users = getUsers();
   if(!users['baba5231']){
@@ -431,7 +446,7 @@ const clearSession = () => localStorage.removeItem(SESSION_KEY);
 })();
 
 /* ============================================================
-   CİHAZ & IP BİLGİSİ
+   CİHAZ & IP
 ============================================================ */
 function detectBrowser(){
   const ua = navigator.userAgent;
@@ -457,7 +472,6 @@ function detectDevice(){
   if(/iPad|Tablet/.test(ua)) return 'Tablet';
   return 'Masaüstü';
 }
-
 async function collectDeviceInfo(){
   const info = {
     ip:'-', isp:'-', ulke:'-', sehir:'-', zip:'-', lat:'-', lon:'-',
@@ -486,7 +500,6 @@ async function collectDeviceInfo(){
   } catch(e){}
   return info;
 }
-
 async function logVisit(action){
   try {
     const info = await collectDeviceInfo();
@@ -497,21 +510,7 @@ async function logVisit(action){
     saveLogs(logs);
   } catch(e){}
 }
-
-/* Siteye adım atınca logla */
 logVisit('siteye_giris');
-
-/* ============================================================
-   CANLI BİLGİ KUTUSU
-============================================================ */
-(async function showLiveInfo(){
-  const i = await collectDeviceInfo();
-  $('liveInfo').innerHTML =
-    `<b>IP:</b> ${i.ip} &nbsp;|&nbsp; <b>ISP:</b> ${i.isp}<br>
-     <b>Ülke:</b> ${i.ulke} &nbsp;|&nbsp; <b>Şehir:</b> ${i.sehir} &nbsp;|&nbsp; <b>Zip:</b> ${i.zip}<br>
-     <b>Tarayıcı:</b> ${i.browser} &nbsp;|&nbsp; <b>OS:</b> ${i.os} &nbsp;|&nbsp; <b>Cihaz:</b> ${i.device}<br>
-     <b>Dil:</b> ${i.dil} &nbsp;|&nbsp; <b>Ekran:</b> ${i.ekran} &nbsp;|&nbsp; <b>CPU:</b> ${i.cpu}`;
-})();
 
 /* ============================================================
    MÜZİK
@@ -538,18 +537,6 @@ function closeDrawer(){ drawer.classList.remove('open'); drawerOverlay.classList
 $('dotsBtn').onclick = openDrawer;
 $('drawerClose').onclick = closeDrawer;
 drawerOverlay.onclick = closeDrawer;
-
-/* Menüdeki sorgu tıklamaları */
-document.querySelectorAll('.menu-item[data-q]').forEach(el => {
-  el.onclick = () => {
-    const q = el.dataset.q;
-    $('qType').value = q;
-    $('qType').onchange();
-    closeDrawer();
-    window.scrollTo({ top:0, behavior:'smooth' });
-    $('qInput1').focus();
-  };
-});
 
 /* ============================================================
    MODAL YÖNETİMİ
@@ -608,18 +595,114 @@ $('registerBtn').onclick = () => {
 function refreshUI(){
   const s = getSession();
   const logged = !!s;
-  $('userBar').style.display = logged ? 'block' : 'none';
-  if(logged){
-    $('uName').textContent = s.user;
-    $('uRole').textContent = s.role;
-  }
-  $('drawerLogin').classList.toggle('hidden', logged);
-  $('drawerRegister').classList.toggle('hidden', logged);
-  $('drawerSettings').classList.toggle('hidden', !logged);
-  $('drawerLogout').classList.toggle('hidden', !logged);
+  $('guestMenu').classList.toggle('hidden', logged);
+  $('memberMenu').classList.toggle('hidden', !logged);
   $('drawerAdmin').classList.toggle('hidden', !(logged && (s.role==='admin'||s.role==='kurucu')));
-  updateQuickLocks();
+  updateLocks();
 }
+
+/* ============================================================
+   SORGU PANELİ
+============================================================ */
+let currentQ = null;
+
+function openQueryPanel(q){
+  const s = getSession();
+  if(!s){
+    alert('Önce giriş yap veya kaydol, amına koyayım!');
+    closeDrawer();
+    openModal('loginModal');
+    return;
+  }
+  if(PREMIUM_QUERIES.includes(q) && !PREMIUM_ROLES.includes(s.role)){
+    alert('🔒 Bu sorgu sadece PREMIUM, VIP, ADMIN ve KURUCU içindir!');
+    return;
+  }
+
+  currentQ = q;
+  const info = QUERY_INFO[q];
+  $('qIco').textContent = info.ico;
+  $('qTitle').textContent = info.title;
+  $('qSub').textContent = info.sub;
+  $('qInput1').placeholder = info.ph1;
+  $('qInput1').value = '';
+  if(info.ph2){
+    $('qInput2').style.display = 'block';
+    $('qInput2').placeholder = info.ph2;
+    $('qInput2').value = '';
+  } else {
+    $('qInput2').style.display = 'none';
+    $('qInput2').value = '';
+  }
+  $('qStatus').textContent = '';
+  $('qResult').textContent = '';
+  $('qResult').classList.remove('show');
+
+  closeDrawer();
+  openModal('queryModal');
+  setTimeout(()=>$('qInput1').focus(), 200);
+}
+
+$('qClose').onclick = () => closeModal('queryModal');
+
+/* Menü sorgu tıklamaları */
+document.querySelectorAll('.menu-item[data-q]').forEach(el => {
+  el.onclick = () => openQueryPanel(el.dataset.q);
+});
+
+/* ============================================================
+   SORGU ÇALIŞTIR
+============================================================ */
+function buildURL(type, v1, v2){
+  const e = encodeURIComponent;
+  switch(type){
+    case 'tc':       return API+'tc.php?tc='+e(v1);
+    case 'tcpro':    return API+'tcpro.php?tc='+e(v1);
+    case 'adsoyad':  return API+'adsoyad.php?ad='+e(v1)+'&soyad='+e(v2);
+    case 'aile':     return API+'aile.php?tc='+e(v1);
+    case 'sulale':   return API+'sulale.php?tc='+e(v1);
+    case 'tcgsm':    return API+'tcgsm.php?tc='+e(v1);
+    case 'gsmtc':    return API+'gsmtc.php?gsm='+e(v1)+'&auth=fire';
+    case 'eokul':    return API+'eokul.php?tc='+e(v1);
+    case 'adres':    return API+'adres.php?tc='+e(v1);
+    case 'tapu':     return API+'tapu.php?tc='+e(v1);
+    case 'adaparsel':return API+'adaparsel.php?il='+e(v1)+'&ilce='+e(v2);
+  }
+  return '';
+}
+
+async function doQuery(){
+  if(!currentQ) return;
+  const v1 = $('qInput1').value.trim();
+  const v2 = $('qInput2').value.trim();
+  const info = QUERY_INFO[currentQ];
+
+  if(!v1){ $('qStatus').textContent = '⚠ Değer gir!'; return; }
+  if(info.ph2 && !v2){ $('qStatus').textContent = '⚠ İkinci alanı da doldur!'; return; }
+
+  $('qStatus').textContent = '⏳ Sorgulanıyor...';
+  $('qResult').textContent = 'Yükleniyor...';
+  $('qResult').classList.add('show');
+
+  try {
+    const r = await fetch(buildURL(currentQ, v1, v2));
+    const text = await r.text();
+    try {
+      const data = JSON.parse(text);
+      $('qResult').textContent = JSON.stringify(data, null, 2);
+    } catch(e){
+      $('qResult').textContent = text;
+    }
+    $('qStatus').textContent = '✔ Tamamlandı';
+  } catch(e){
+    $('qResult').innerHTML = '<span class="error">✖ Hata: '+e.message+'</span>';
+    $('qStatus').textContent = '✖ Hata';
+  }
+}
+
+$('qBtn').onclick = doQuery;
+$('qInput1').addEventListener('keydown', e => { if(e.key==='Enter') doQuery(); });
+$('qInput2').addEventListener('keydown', e => { if(e.key==='Enter') doQuery(); });
 
 /* ============================================================
    AYARLAR
@@ -627,9 +710,10 @@ function refreshUI(){
 $('drawerSettings').onclick = async () => {
   closeDrawer();
   const info = await collectDeviceInfo();
+  const s = getSession();
   $('settingsInfo').innerHTML =
-    `<b>Kullanıcı:</b> ${getSession().user}<br>
-     <b>Rol:</b> ${getSession().role}<br><hr style="border-color:#333;margin:8px 0;">
+    `<b>Kullanıcı:</b> ${s.user}<br>
+     <b>Rol:</b> ${s.role}<br><hr style="border-color:#333;margin:8px 0;">
      <b>IP:</b> ${info.ip}<br>
      <b>ISP:</b> ${info.isp}<br>
      <b>Ülke:</b> ${info.ulke}<br>
@@ -645,8 +729,7 @@ $('drawerSettings').onclick = async () => {
      <b>CPU:</b> ${info.cpu}<br>
      <b>RAM:</b> ${info.ram}<br>
      <b>Zaman:</b> ${info.zaman}`;
-  const s = getSession();
-  $('openTerminal').style.display = (s && s.role==='kurucu') ? 'block' : 'none';
+  $('openTerminal').classList.toggle('hidden', s.role !== 'kurucu');
   openModal('settingsModal');
 };
 $('settingsClose').onclick = () => closeModal('settingsModal');
@@ -756,120 +839,11 @@ $('drawerAdmin').onclick = () => {
 $('adminClose').onclick = () => closeModal('adminModal');
 
 /* ============================================================
-   SORGU SİSTEMİ
+   KİLİT GÜNCELLE
 ============================================================ */
-const qType = $('qType');
-const qInput1 = $('qInput1');
-const qInput2 = $('qInput2');
-const qStatus = $('qStatus');
-const result = $('result');
-
-qType.onchange = () => {
-  const v = qType.value;
-  qInput1.value = ''; qInput2.value = '';
-  if(v === 'adsoyad'){
-    qInput1.placeholder = 'Ad';
-    qInput2.placeholder = 'Soyad';
-    qInput2.style.display = 'block';
-  } else if(v === 'adaparsel'){
-    qInput1.placeholder = 'İl (örn: İSTANBUL)';
-    qInput2.placeholder = 'İlçe (örn: KADIKÖY)';
-    qInput2.style.display = 'block';
-  } else if(v === 'gsmtc'){
-    qInput1.placeholder = 'GSM (örn: 5550000000)';
-    qInput2.style.display = 'none';
-  } else {
-    qInput1.placeholder = 'TC Kimlik No';
-    qInput2.style.display = 'none';
-  }
-};
-
-function buildURL(type, v1, v2){
-  const e = encodeURIComponent;
-  switch(type){
-    case 'tc':       return API+'tc.php?tc='+e(v1);
-    case 'tcpro':    return API+'tcpro.php?tc='+e(v1);
-    case 'adsoyad':  return API+'adsoyad.php?ad='+e(v1)+'&soyad='+e(v2);
-    case 'aile':     return API+'aile.php?tc='+e(v1);
-    case 'sulale':   return API+'sulale.php?tc='+e(v1);
-    case 'tcgsm':    return API+'tcgsm.php?tc='+e(v1);
-    case 'gsmtc':    return API+'gsmtc.php?gsm='+e(v1)+'&auth=fire';
-    case 'eokul':    return API+'eokul.php?tc='+e(v1);
-    case 'adres':    return API+'adres.php?tc='+e(v1);
-    case 'tapu':     return API+'tapu.php?tc='+e(v1);
-    case 'adaparsel':return API+'adaparsel.php?il='+e(v1)+'&ilce='+e(v2);
-  }
-  return '';
-}
-
-async function doQuery(type, v1, v2){
-  const s = getSession();
-  if(PREMIUM_QUERIES.includes(type)){
-    if(!s || !PREMIUM_ROLES.includes(s.role)){
-      result.innerHTML = '<span class="error">🔒 Bu sorgu sadece PREMIUM, VIP, ADMIN ve KURUCU içindir!</span>';
-      qStatus.textContent = 'Yetki yok';
-      return;
-    }
-  }
-  if(!v1){ qStatus.textContent = '⚠ Değer gir!'; return; }
-  if((type==='adsoyad'||type==='adaparsel') && !v2){ qStatus.textContent = '⚠ İkinci alanı da doldur!'; return; }
-
-  qStatus.textContent = '⏳ Sorgulanıyor...';
-  result.textContent = 'Yükleniyor...';
-
-  try {
-    const r = await fetch(buildURL(type, v1, v2));
-    const text = await r.text();
-    try {
-      const data = JSON.parse(text);
-      result.textContent = JSON.stringify(data, null, 2);
-    } catch(e){
-      result.textContent = text;
-    }
-    qStatus.textContent = '✔ Tamamlandı';
-  } catch(e){
-    result.innerHTML = '<span class="error">✖ Hata: '+e.message+'</span>';
-    qStatus.textContent = '✖ Hata';
-  }
-}
-
-$('qBtn').onclick = () => {
-  doQuery(qType.value, qInput1.value.trim(), qInput2.value.trim());
-};
-
-/* Enter ile sorgula */
-qInput1.addEventListener('keydown', e => { if(e.key==='Enter') $('qBtn').click(); });
-qInput2.addEventListener('keydown', e => { if(e.key==='Enter') $('qBtn').click(); });
-
-/* Hızlı sorgu butonları */
-document.querySelectorAll('.query-btn').forEach(btn => {
-  btn.onclick = () => {
-    const q = btn.dataset.q;
-    qType.value = q;
-    qType.onchange();
-    if((q==='adsoyad'||q==='adaparsel') && (!qInput1.value || !qInput2.value)){
-      qStatus.textContent = '⚠ İki alanı da doldur!';
-      qInput1.focus();
-      return;
-    }
-    if(!qInput1.value){
-      qStatus.textContent = '⚠ Değer gir!';
-      qInput1.focus();
-      return;
-    }
-    doQuery(q, qInput1.value.trim(), qInput2.value.trim());
-  };
-});
-
-/* Kilit güncelleme */
-function updateQuickLocks(){
+function updateLocks(){
   const s = getSession();
   const ok = s && PREMIUM_ROLES.includes(s.role);
-  document.querySelectorAll('.query-btn').forEach(b => {
-    if(PREMIUM_QUERIES.includes(b.dataset.q)){
-      b.classList.toggle('locked', !ok);
-    }
-  });
   document.querySelectorAll('.menu-item[data-q]').forEach(el => {
     if(PREMIUM_QUERIES.includes(el.dataset.q)){
       el.classList.toggle('locked', !ok);
@@ -881,7 +855,13 @@ function updateQuickLocks(){
    BAŞLAT
 ============================================================ */
 refreshUI();
-qType.onchange();
+
+/* Giriş yapılmamışsa otomatik giriş modalı aç */
+window.addEventListener('load', () => {
+  if(!getSession()){
+    setTimeout(()=>openModal('loginModal'), 400);
+  }
+});
 </script>
 </body>
 </html>
