@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Vantorium Sorgu</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
@@ -196,6 +199,7 @@
     white-space:nowrap; width:100%;
   }
   button.primary:active { transform:scale(0.97); }
+  button.primary:disabled { opacity:.5; cursor:wait; }
 
   .q-status {
     color:#a78bfa; font-size:12.5px;
@@ -214,6 +218,7 @@
   .q-result.show { display:block; }
   .error { color:#f87171; }
   .ok { color:#22ff88; }
+  .info { color:#a78bfa; }
 
   .terminal {
     background:#000; color:#22ff88;
@@ -385,13 +390,14 @@ const LOGS_KEY = 'vantorium_logs';
 const PREMIUM_QUERIES = ['tcpro','aile','sulale','tapu'];
 const PREMIUM_ROLES = ['premium','vip','kurucu','admin'];
 
-/* Sırayla denenecek proxy'ler */
+/* 6 proxy sırayla — biri çalışırsa tamam */
 const PROXIES = [
-  { name:'codetabs',  fn: u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u) },
-  { name:'allorigins',fn: u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u) },
-  { name:'corsproxy', fn: u => 'https://corsproxy.io/?' + encodeURIComponent(u) },
-  { name:'thingproxy',fn: u => 'https://thingproxy.freeboard.io/fetch/' + u },
-  { name:'direkt',    fn: u => u }
+  { name:'codetabs',    fn: u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u) },
+  { name:'allorigins',  fn: u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u) },
+  { name:'corsproxy.io',fn: u => 'https://corsproxy.io/?' + encodeURIComponent(u) },
+  { name:'thingproxy',  fn: u => 'https://thingproxy.freeboard.io/fetch/' + u },
+  { name:'whateverorigin', fn: u => 'https://www.whateverorigin.org/get?url=' + encodeURIComponent(u) },
+  { name:'direkt',      fn: u => u }
 ];
 
 const QUERY_INFO = {
@@ -718,6 +724,7 @@ async function doQuery(){
   if(!v1){ $('qStatus').textContent = '⚠ Değer gir!'; return; }
   if(info.ph2 && !v2){ $('qStatus').textContent = '⚠ İkinci alanı da doldur!'; return; }
 
+  $('qBtn').disabled = true;
   $('qStatus').textContent = '⏳ Sorgulanıyor...';
   $('qResult').textContent = '';
   $('qResult').classList.add('show');
@@ -725,11 +732,13 @@ async function doQuery(){
   const logs = [];
   function onLog(msg){
     logs.push(msg);
-    $('qResult').textContent = logs.join('\n') + '\n\n--- SONUÇ ---\n';
+    $('qResult').textContent = logs.join('\n');
   }
 
   try {
     const targetURL = buildURL(currentQ, v1, v2);
+    onLog('Hedef: ' + targetURL);
+    onLog('');
     const res = await proxiedFetch(targetURL, onLog);
     logs.push('');
     logs.push('════ SONUÇ (' + res.proxy + ') ════');
@@ -745,10 +754,14 @@ async function doQuery(){
     logs.push('💀 TÜM PROXY\'LER BAŞARISIZ');
     logs.push('Son hata: ' + e.message);
     logs.push('');
-    logs.push('API veya proxy erişilemiyor.');
-    logs.push('API sağlam ama CORS engelliyor olabilir.');
+    logs.push('Öneriler:');
+    logs.push('1. API gerçekten çalışıyor mu? Tarayıcıda test et.');
+    logs.push('2. Farklı proxy kullanmak için kodu güncelle.');
+    logs.push('3. Kendi proxy sunucunu kur (Cloudflare Worker).');
     $('qResult').textContent = logs.join('\n');
     $('qStatus').textContent = '✖ Tüm proxy\'ler başarısız';
+  } finally {
+    $('qBtn').disabled = false;
   }
 }
 
